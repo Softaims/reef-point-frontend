@@ -1,0 +1,45 @@
+{
+  "name": "reef-wallet-integration",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@ethersproject/bignumber": "^5.8.0",
+    "@ethersproject/bytes": "^5.8.0",
+    "@ethersproject/logger": "^5.8.0",
+    "@ethersproject/properties": "^5.8.0",
+    "@ethersproject/strings": "^5.8.0",
+    "@polkadot/api": "^16.2.1",
+    "@polkadot/api-derive": "^16.2.1",
+    "@polkadot/types": "^16.2.1",
+    "@polkadot/types-known": "^16.2.1",
+    "@polkadot/util": "^13.5.1",
+    "@polkadot/x-randomvalues": "^13.5.1",
+    "@reef-defi/evm-provider": "^1.0.11",
+    "@reef-defi/extension-dapp": "^1.0.22",
+    "@reef-defi/type-definitions": "^1.1.0",
+    "@reef-defi/x-global": "^7.8.2",
+    "buffer": "^6.0.3",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "rxjs": "^7.8.2"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.25.0",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
+    "@vitejs/plugin-react": "^4.4.1",
+    "eslint": "^9.25.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "globals": "^16.0.0",
+    "vite": "^6.3.5"
+  },
+  "packageManager": "yarn@4.5.1+sha512.341db9396b6e289fecc30cd7ab3af65060e05ebff4b3b47547b278b9e67b08f485ecd8c79006b405446262142c7a38154445ef7f17c1d5d1de7d90bf9ce7054d"
+}
