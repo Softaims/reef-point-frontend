@@ -11,8 +11,8 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="w-full bg-[#EEEBF6] border-b border-gray-200 px-4 py-3 shadow-2xl">
-      <div className="flex items-center justify-between max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+    <header className="w-full sticky top-0 bg-[#F7F5FB] py-3 shadow-[0_8px_20px_rgba(172,138,199,0.12)] z-10">
+      <div className="flex items-center justify-between max-w-7xl mx-auto px-4 sm:px-4 lg:px-16">
         {/* Logo Section */}
         <div className="flex items-center space-x-2 flex-shrink-0">
           <img
@@ -42,9 +42,9 @@ export default function Header() {
           </div>
 
           {/* Settings Icon */}
-          <div className=" w-8 h-8 flex items-center justify-center shadow-md rounded-full bg-[#F4F1FC]">
-            <button className="p-2 text-[#A93185] hover:text-black transition-colors cursor-pointer">
-              <Uik.Icon icon={faCog} />
+          <div className="w-8 h-8 flex items-center justify-center shadow-md rounded-full bg-[#F4F1FC]">
+            <button className="flex items-center justify-center text-[#A93185] hover:text-black transition-colors cursor-pointer w-full h-full">
+              <Uik.Icon icon={faCog} className="w-4 h-4" />
             </button>
           </div>
         </div>
