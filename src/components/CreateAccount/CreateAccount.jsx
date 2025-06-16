@@ -9,7 +9,7 @@ export default function CreateAccount() {
   return (
     <div className="min-h-screen flex flex-col bg-[#2C024D]">
       {/* Header */}
-      <div className="px-4 sm:px-6 lg:px-8 pt-8 pb-10">
+      <div className="px-4 sm:px-6 lg:px-8 pt-8 pb-12">
         <div className="max-w-4xl mx-auto">
           <img
             src={Logo}
