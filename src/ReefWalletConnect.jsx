@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import Uik from "@reef-chain/ui-kit";
+
 import {
   web3Enable,
   web3Accounts,
@@ -8,6 +10,7 @@ import { Provider } from "@reef-chain/evm-provider";
 import { WsProvider } from "@polkadot/api";
 
 const ReefWalletConnect = () => {
+  const { Button, ReefLogo } = Uik;
   const [accounts, setAccounts] = useState([]);
   const [selectedAccount, setSelectedAccount] = useState(null);
   const [balance, setBalance] = useState(null);
@@ -51,7 +54,11 @@ const ReefWalletConnect = () => {
 
   return (
     <div>
-      <button onClick={connectWallet}>Connect to Reef Wallet</button>
+      <button onClick={connectWallet} className="bg-blue">
+        Connect to Reef Wallet
+      </button>
+      <ReefLogo />
+
       <div>
         <h3>Accounts:</h3>
         {accounts.length > 0 ? (
