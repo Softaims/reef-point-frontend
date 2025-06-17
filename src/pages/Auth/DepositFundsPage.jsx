@@ -84,7 +84,7 @@ export default function DepositFundsPage() {
       </div>
 
       {/* Main Content Card */}
-      <div className="flex-1 bg-gray-200 rounded-t-3xl md:w-[70%] md:mx-auto md:mb-2 lg:w-[50%] md:rounded-b-3xl mx-0 px-6 py-8">
+      <div className="flex-1 bg-[#D9D9D9] rounded-t-3xl md:w-[70%] md:mx-auto md:mb-2 lg:w-[50%] md:rounded-b-3xl mx-0 px-6 py-8">
         <div className="max-w-sm mx-auto space-y-6">
           {/* Title */}
           <h3 className="text-[#000000] text-[16px] sm:text-lg font-bold">
