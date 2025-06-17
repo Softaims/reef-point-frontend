@@ -63,10 +63,10 @@ export default function CreateAccount() {
 
             {/* Claim Button */}
             <div className="pt-8 w-[60%] mx-auto">
-              <Link to="/create-account/step-3">
+              <Link to="/token">
                 <button
                   type="button"
-                  className="w-full bg-[#A29696] hover:bg-[#8B7C7C] text-black font-medium text-lg h-[50px] px-6 rounded-lg transition duration-200 transform hover:scale-105 active:scale-95"
+                  className="w-full bg-[#A29696] cursor-pointer hover:bg-[#8B7C7C] text-black font-medium text-lg h-[50px] px-6 rounded-lg transition duration-200 transform hover:scale-105 active:scale-95"
                 >
                   Claim
                 </button>
