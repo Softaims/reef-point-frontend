@@ -1,5 +1,5 @@
-import splashScreen from "../../assets/splashscreen.png";
-import Logo from "../../assets/splashscreenReeflogo.png";
+import splashScreen from "../../../assets/splashscreen.png";
+import Logo from "../../../assets/splashscreenReeflogo.png";
 import { Link } from "react-router-dom";
 export default function SplashScreen() {
   return (

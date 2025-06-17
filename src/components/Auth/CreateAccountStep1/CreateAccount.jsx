@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import Logo from "../../assets/splashscreenReeflogo.png";
+import Logo from "../../../assets/splashscreenReeflogo.png";
+import { Link } from "react-router-dom";
 
 export default function CreateAccount() {
   const [backupToCloud, setBackupToCloud] = useState("");
@@ -18,9 +19,8 @@ export default function CreateAccount() {
           />
         </div>
       </div>
-
       {/* Content Container - Full Width Gray Background */}
-      <div className="flex-1 bg-[#D9D9D9] rounded-t-[32px] w-full md:w-[50%] md:mx-auto md:mb-8 pt-8 px-4 sm:px-6 lg:px-8 pb-10">
+      <div className="flex-1 bg-[#D9D9D9] rounded-t-[32px] md:rounded-b-[32px] w-full  md:w-[70%] lg:w-[50%] md:mx-auto md:mb-8 pt-8 px-4 sm:px-6 lg:px-8 pb-10">
         <div className="max-w-md mx-auto lg:max-w-2xl">
           <div className="rounded-xl p-6 sm:p-8 space-y-8">
             {/* Account Address */}
@@ -112,14 +112,16 @@ export default function CreateAccount() {
             </div>
 
             {/* Button */}
-            <div className="pt-6 w-[50%] mx-auto">
-              <button
-                type="button"
-                className="w-full cursor-pointer bg-[#A29696] hover:bg-[#8B7C7C] text-black font-medium text-lg h-[50px] px-6 rounded-lg transition duration-200 transform hover:scale-105 active:scale-95"
-              >
-                Next
-              </button>
-            </div>
+            <Link to="/create-account/step-2">
+              <div className="pt-6 w-[50%] mx-auto">
+                <button
+                  type="button"
+                  className="w-full cursor-pointer bg-[#A29696] hover:bg-[#8B7C7C] text-black font-medium text-lg h-[50px] px-6 rounded-lg transition duration-200 transform hover:scale-105 active:scale-95"
+                >
+                  Next
+                </button>
+              </div>
+            </Link>
           </div>
         </div>
       </div>
