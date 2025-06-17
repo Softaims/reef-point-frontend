@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { FaChevronDown, FaBars, FaInfoCircle, FaSpinner } from "react-icons/fa";
 import Logo from "../../assets/splashscreenReeflogo.png";
 import EthereumIcon from "../../assets/icons8-ethereum-48.png";
-
+import { Link } from "react-router-dom";
 import googlepay from "../../assets/google-pay.png";
 import { FaEthereum } from "react-icons/fa";
 import { RiVisaLine } from "react-icons/ri";
@@ -319,26 +319,27 @@ export default function DepositFundsPage() {
               </div>
             </div>
           </div>
-
           {/* Skip Button */}
-          <div className="pt-3 flex justify-center">
-            <button
-              type="button"
-              disabled={isProcessing}
-              onClick={handleSkip}
-              className="flex items-center justify-center bg-gray-400 hover:bg-gray-500 w-[66%] text-black h-[4rem] font-medium text-lg py-3 px-6 rounded-lg transition duration-200 disabled:opacity-70  "
-              style={{ backgroundColor: "#A29696" }}
-            >
-              {isProcessing ? (
-                <>
-                  <FaSpinner className="animate-spin mr-2" />
-                  Processing...
-                </>
-              ) : (
-                "Skip"
-              )}
-            </button>
-          </div>
+          <Link to="/home">
+            <div className="pt-3 flex justify-center">
+              <button
+                type="button"
+                disabled={isProcessing}
+                onClick={handleSkip}
+                className="flex items-center justify-center bg-gray-400 hover:bg-gray-500 w-[66%] text-black h-[4rem] font-medium text-lg py-3 px-6 rounded-lg transition duration-200 disabled:opacity-70  "
+                style={{ backgroundColor: "#A29696" }}
+              >
+                {isProcessing ? (
+                  <>
+                    <FaSpinner className="animate-spin mr-2" />
+                    Processing...
+                  </>
+                ) : (
+                  "Skip"
+                )}
+              </button>
+            </div>
+          </Link>
         </div>
       </div>
     </div>
