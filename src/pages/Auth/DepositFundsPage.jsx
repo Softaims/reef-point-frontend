@@ -320,7 +320,7 @@ export default function DepositFundsPage() {
             </div>
           </div>
           {/* Skip Button */}
-          <Link to="/home">
+          <Link to="/tokens">
             <div className="pt-3 flex justify-center">
               <button
                 type="button"

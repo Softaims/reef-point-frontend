@@ -7,7 +7,7 @@ import QrCode from "../../assets/qrcodepng.png";
 
 export default function Token() {
   // State to toggle visibility of the balance
-  const [isBalanceVisible, setIsBalanceVisible] = useState(false);
+  const [isBalanceVisible, setIsBalanceVisible] = useState(true);
   // State to track the active tab
   const [activeTab, setActiveTab] = useState("tokens");
 
@@ -129,12 +129,12 @@ export default function Token() {
             <button
               aria-label={isBalanceVisible ? "Hide balance" : "Show balance"}
               onClick={toggleBalanceVisibility}
-              className="text-xl text-[#000000]"
+              className="text-xl text-[#000000] cursor-pointer"
             >
               {isBalanceVisible ? (
-                <FaEyeSlash className="text-white text-2xl" /> // Show eye with slash when balance is hidden
-              ) : (
                 <FaEye className="text-white" /> // Show eye icon when balance is visible
+              ) : (
+                <FaEyeSlash className="text-white text-2xl" /> // Show eye with slash when balance is hidden
               )}
             </button>
           </div>
