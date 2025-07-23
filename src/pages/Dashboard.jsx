@@ -132,9 +132,6 @@ const Dashboard = () => {
                 <option>Completed</option>
                 <option>Draft</option>
               </select>
-              <button className="text-purple-600 hover:text-purple-700 text-sm font-medium cursor-pointer hover:underline transition-colors">
-                View All
-              </button>
             </div>
           </div>
           <CampaignTable campaigns={mockCampaigns} />
