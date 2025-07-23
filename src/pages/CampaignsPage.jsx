@@ -7,6 +7,7 @@ import { mockCampaigns as initialMockCampaigns } from "../data/mockCampaigns";
 import { Plus, Filter, Download } from "lucide-react";
 import CreateCampaignModal from "../components/Dashboard/CreateCampaignModal";
 import DeleteCampaignModal from "../components/Dashboard/DeleteCampaignModal";
+import Uik from "@reef-chain/ui-kit";
 
 const CampaignsPage = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -64,14 +65,28 @@ const CampaignsPage = () => {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
-              <button
-                onClick={handleCreateCampaign}
-                className="text-white w-[12rem] h-[3rem] rounded-2xl bg-gradient-to-br from-[#ae27a5] to-[#742cb2] shadow-[0_5px_20px_-10px_#742cb2]  font-medium transition-all duration-200 transform hover:scale-105 hover:shadow-xl flex items-center justify-center space-x-2 text-sm lg:text-base cursor-pointer"
+            <div className="flex justify-center lg:justify-end">
+              <div
+                className="relative w-full sm:w-[12rem] h-[3rem] rounded-2xl overflow-hidden"
+                style={{
+                  background:
+                    "linear-gradient(90deg, #742cb2 0%, #ae27a5 100%)",
+                }}
               >
-                <Plus className="w-4 lg:w-5 h-4 lg:h-5" />
-                <span>Create Campaign</span>
-              </button>
+                {/* Bubble effect background - positioned to fill button */}
+                <div className="absolute inset-0 w-full h-full z-10 pointer-events-none">
+                  <Uik.Bubbles />
+                </div>
+
+                {/* Button content */}
+                <button
+                  onClick={handleCreateCampaign}
+                  className="relative z-20 text-white w-full h-full rounded-2xl shadow-[0_5px_20px_-10px_#742cb2] font-medium transition-all duration-200 transform hover:scale-105 flex items-center justify-center space-x-2 text-sm lg:text-base cursor-pointer bg-transparent border-none hover:shadow-[0_8px_30px_-12px_#742cb2]"
+                >
+                  <Plus className="w-4 lg:w-5 h-4 lg:h-5" />
+                  <span>Create Campaign</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
