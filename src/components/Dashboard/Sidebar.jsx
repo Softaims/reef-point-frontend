@@ -167,14 +167,6 @@ const SidebarContent = ({
           </ul>
         </div>
       </nav>
-
-      {/* Bottom Section */}
-      {/* <div className="p-4 border-t border-gray-200">
-        <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-3">
-          <p className="text-xs font-medium text-purple-800">Need Help?</p>
-          <p className="text-xs text-purple-600 mt-1">Contact support team</p>
-        </div>
-      </div> */}
     </div>
   );
 };

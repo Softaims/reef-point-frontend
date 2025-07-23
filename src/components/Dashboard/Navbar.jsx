@@ -14,7 +14,7 @@ const Navbar = ({ setIsMobileMenuOpen }) => {
               onClick={() => setIsMobileMenuOpen(true)}
               className="lg:hidden p-2 text-gray-600 hover:text-purple-600 hover:bg-gray-100 rounded-lg transition-colors"
             >
-              <Menu className="w-5 h-5" />
+              <Menu className="w-5 h-5 cursor-pointer" />
             </button>
 
             {/* Mobile Logo */}
