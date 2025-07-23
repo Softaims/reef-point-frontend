@@ -103,14 +103,14 @@ const DeleteCampaignModal = ({ isOpen, onClose, onDelete, campaign }) => {
             type="button"
             onClick={handleClose}
             disabled={isDeleting}
-            className="flex-1 px-6 py-3 border h-[3rem] cursor-pointer border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 px-6 py-6 sm:py-3 border min-h-[3.5rem] sm:min-h-[3rem] cursor-pointer border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-base sm:text-sm"
           >
             Cancel
           </button>
           <button
             onClick={handleDelete}
             disabled={isDeleting}
-            className="flex-1 bg-red-600 hover:bg-red-700 cursor-pointer text-white px-6 py-3 h-[3rem] rounded-lg font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+            className="flex-1 bg-red-600 hover:bg-red-700 cursor-pointer text-white px-6 py-6 sm:py-3 min-h-[3.5rem] sm:min-h-[3rem] rounded-lg font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-base sm:text-sm"
           >
             {isDeleting ? (
               <div className="flex items-center">
