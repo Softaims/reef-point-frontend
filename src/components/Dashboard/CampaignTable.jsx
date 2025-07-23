@@ -1,6 +1,6 @@
 import { Edit, Trash2, Eye } from "lucide-react";
 
-const CampaignTable = ({ campaigns }) => {
+const CampaignTable = ({ campaigns, onDeleteCampaign }) => {
   const getStatusBadge = (status) => {
     const statusStyles = {
       Active: "bg-green-100 text-green-800",
@@ -89,13 +89,13 @@ const CampaignTable = ({ campaigns }) => {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <div className="flex items-center space-x-2">
-                    <button className="text-blue-600 hover:text-blue-800 p-1 hover:bg-blue-50 rounded transition-colors">
-                      <Eye className="w-4 h-4" />
-                    </button>
                     <button className="text-purple-600 hover:text-purple-800 p-1 hover:bg-purple-50 rounded transition-colors">
                       <Edit className="w-4 h-4" />
                     </button>
-                    <button className="text-red-600 hover:text-red-800 p-1 hover:bg-red-50 rounded transition-colors">
+                    <button
+                      onClick={() => onDeleteCampaign(campaign)}
+                      className="text-red-600 hover:text-red-800 p-1 hover:bg-red-50 rounded transition-colors"
+                    >
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>

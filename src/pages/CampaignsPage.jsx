@@ -6,12 +6,14 @@ import CampaignTable from "../components/Dashboard/CampaignTable";
 import { mockCampaigns as initialMockCampaigns } from "../data/mockCampaigns";
 import { Plus, Filter, Download } from "lucide-react";
 import CreateCampaignModal from "../components/Dashboard/CreateCampaignModal";
+import DeleteCampaignModal from "../components/Dashboard/DeleteCampaignModal";
 
 const CampaignsPage = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [campaigns, setCampaigns] = useState(initialMockCampaigns);
-
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [campaignToDelete, setCampaignToDelete] = useState(null);
   const handleAddCampaign = (newCampaign) => {
     setCampaigns((prev) => [
       { ...newCampaign, id: Date.now() }, // Add a unique id
@@ -24,6 +26,21 @@ const CampaignsPage = () => {
 
   const handleCloseModal = () => {
     setIsCreateModalOpen(false);
+  };
+  // Delete modal handlers
+  const handleDeleteCampaign = (campaignId) => {
+    setCampaigns((prev) =>
+      prev.filter((campaign) => campaign.id !== campaignId)
+    );
+  };
+  const handleOpenDeleteModal = (campaign) => {
+    setCampaignToDelete(campaign);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setCampaignToDelete(null);
   };
 
   return (
@@ -60,7 +77,10 @@ const CampaignsPage = () => {
         </div>
 
         {/* <CampaignTable campaigns={mockCampaigns} /> */}
-        <CampaignTable campaigns={campaigns} />
+        <CampaignTable
+          campaigns={campaigns}
+          onDeleteCampaign={handleOpenDeleteModal}
+        />
       </main>
 
       {/* Mobile Menu Overlay */}
@@ -75,6 +95,12 @@ const CampaignsPage = () => {
         isOpen={isCreateModalOpen}
         onClose={handleCloseModal}
         onCreate={handleAddCampaign}
+      />
+      <DeleteCampaignModal
+        isOpen={isDeleteModalOpen}
+        onClose={handleCloseDeleteModal}
+        onDelete={handleDeleteCampaign}
+        campaign={campaignToDelete}
       />
     </div>
   );
