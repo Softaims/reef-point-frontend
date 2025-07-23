@@ -99,7 +99,7 @@ const CreateCampaignModal = ({ isOpen, onClose, onCreate }) => {
       onClose();
 
       // You could show a success toast here
-      alert("Campaign created successfully!");
+      // alert("Campaign created successfully!");
     } catch (error) {
       if (error instanceof z.ZodError) {
         // Show all errors for each field (array of messages)
@@ -438,14 +438,14 @@ const CreateCampaignModal = ({ isOpen, onClose, onCreate }) => {
               type="button"
               onClick={handleClose}
               disabled={isLoading}
-              className="flex-1 px-6 py-3 border border-gray-300 cursor-pointer text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 px-6 py-3 border h-[3rem] border-gray-300 cursor-pointer text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Cancel
+              <span className="w-5 h-5"> Cancel</span>
             </button>
             <button
               type="submit"
               disabled={isLoading}
-              className="flex-1 w-[12rem] h-[3rem] bg-gradient-to-br from-[#ae27a5] to-[#742cb2] shadow-[0_5px_20px_-10px_#742cb2]  text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 transform hover:scale-105 cursor-pointer hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center"
+              className="flex-1 h-[3rem] bg-gradient-to-br from-[#ae27a5] to-[#742cb2] shadow-[0_5px_20px_-10px_#742cb2]  text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 transform hover:scale-105 cursor-pointer hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center"
             >
               {isLoading ? (
                 <div className="flex items-center">

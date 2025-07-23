@@ -4,7 +4,7 @@ import { Bell, Search, User, ChevronDown, Menu } from "lucide-react";
 
 const Navbar = ({ setIsMobileMenuOpen }) => {
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200 fixed top-0 right-0 left-0 lg:left-64 z-40">
+    <header className="bg-white shadow-sm border-b border-gray-200 fixed top-0 right-0 left-0 lg:left-64 z-40 overflow-x-hidden">
       <div className="px-4 lg:px-6 py-4">
         <div className="flex items-center justify-between">
           {/* Left Section */}
@@ -76,7 +76,7 @@ const Navbar = ({ setIsMobileMenuOpen }) => {
             <input
               type="text"
               placeholder="Search campaigns, users..."
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
+              className="w-[90%] pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
             />
           </div>
         </div>

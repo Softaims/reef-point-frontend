@@ -22,10 +22,10 @@ const DeleteCampaignModal = ({ isOpen, onClose, onDelete, campaign }) => {
       onClose();
 
       // You could show a success toast here
-      alert("Campaign deleted successfully!");
+      // alert("Campaign deleted successfully!");
     } catch (error) {
       console.error("Error deleting campaign:", error);
-      alert("Failed to delete campaign. Please try again.");
+      // alert("Failed to delete campaign. Please try again.");
     } finally {
       setIsDeleting(false);
     }
@@ -105,18 +105,18 @@ const DeleteCampaignModal = ({ isOpen, onClose, onDelete, campaign }) => {
             type="button"
             onClick={handleClose}
             disabled={isDeleting}
-            className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 px-6 py-3 border h-[3rem] cursor-pointer border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Cancel
           </button>
           <button
             onClick={handleDelete}
             disabled={isDeleting}
-            className="flex-1 bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+            className="flex-1 bg-red-600 hover:bg-red-700 cursor-pointer text-white px-6 py-3 h-[3rem] rounded-lg font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
           >
             {isDeleting ? (
               <div className="flex items-center">
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                <div className="w-5 h-5 border-2 border-white border-t-transparent disabled:opacity-50 disabled:cursor-not-allowed rounded-full animate-spin mr-2"></div>
                 Deleting...
               </div>
             ) : (
