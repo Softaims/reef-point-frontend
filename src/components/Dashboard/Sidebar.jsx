@@ -95,7 +95,7 @@ const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
           </div>
           <button
             onClick={() => setIsMobileMenuOpen(false)}
-            className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            className="p-2 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors"
           >
             <X className="w-5 h-5 text-gray-500" />
           </button>
