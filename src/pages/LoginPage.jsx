@@ -118,7 +118,7 @@ const LoginPage = () => {
                   placeholder="Enter your email"
                   value={formData.email}
                   onChange={(e) => handleInputChange("email", e.target.value)}
-                  className={`w-full h-12 px-4 border-2 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-200/40 ${
+                  className={`w-full h-12 px-4 border-2 placeholder:text-sm rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-200/40 ${
                     errors.email
                       ? "border-red-300 focus:border-red-500 bg-red-50/50"
                       : "border-gray-200 focus:border-purple-500 bg-white hover:border-gray-100"
@@ -163,7 +163,7 @@ const LoginPage = () => {
                     onChange={(e) =>
                       handleInputChange("password", e.target.value)
                     }
-                    className={`w-full h-12 px-4 pr-12 border-2 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-pink-200/40 ${
+                    className={`w-full h-12 px-4 placeholder:text-sm pr-12 border-2 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-pink-200/40 ${
                       errors.password
                         ? "border-red-300 focus:border-red-500 bg-red-50/50"
                         : "border-gray-200 focus:border-purple-500 bg-white hover:border-gray-100"
