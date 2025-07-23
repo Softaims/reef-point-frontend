@@ -18,7 +18,7 @@ const CampaignsPage = () => {
       />
       <Navbar setIsMobileMenuOpen={setIsMobileMenuOpen} />
 
-      <main className="lg:ml-64 pt-[7rem] p-4 ">
+      <main className="lg:ml-64 sm:pt-[7rem] pt-[11rem] p-4 ">
         <div className="mb-6 lg:mb-8">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div>
