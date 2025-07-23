@@ -4,7 +4,7 @@ import { Bell, Search, User, ChevronDown, Menu } from "lucide-react";
 
 const Navbar = ({ setIsMobileMenuOpen }) => {
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200 fixed top-0 right-0 left-0 lg:left-64 z-30">
+    <header className="bg-white shadow-sm border-b border-gray-200 fixed top-0 right-0 left-0 lg:left-64 z-40">
       <div className="px-4 lg:px-6 py-4">
         <div className="flex items-center justify-between">
           {/* Left Section */}

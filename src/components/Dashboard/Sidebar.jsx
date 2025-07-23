@@ -11,6 +11,7 @@ import {
   Coins,
   Waves,
 } from "lucide-react";
+import headerLogo from "../../assets/header-logo-reef.png";
 
 const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
   const location = useLocation();
@@ -28,27 +29,27 @@ const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
     },
     {
       name: "Users",
-      path: "/dashboard/users",
+      path: "#",
       icon: Users,
     },
     {
       name: "Analytics",
-      path: "/dashboard/analytics",
+      path: "#",
       icon: BarChart3,
     },
     {
       name: "Tokens",
-      path: "/tokens",
+      path: "#",
       icon: Coins,
     },
     {
       name: "Pools",
-      path: "/pools",
+      path: "#",
       icon: Waves,
     },
     {
       name: "Settings",
-      path: "/dashboard/settings",
+      path: "#",
       icon: Settings,
     },
   ];
@@ -70,7 +71,7 @@ const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
   return (
     <>
       {/* Desktop Sidebar */}
-      <div className="hidden lg:block bg-white h-screen w-64 shadow-lg border-r border-gray-200 fixed left-0 top-0 z-40">
+      <div className="hidden lg:block bg-white h-screen w-64 shadow-lg  fixed left-0 top-0 z-40">
         <SidebarContent
           menuItems={menuItems}
           isActive={isActive}
@@ -123,12 +124,16 @@ const SidebarContent = ({
       {/* Logo Section - Only show on desktop */}
       {!isMobile && (
         <div className="p-6 border-b border-gray-200">
-          <div className="flex items-center">
-            <div className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-              Reef
-            </div>
-            <div className="text-xl font-semibold text-gray-700 ml-1">SWAP</div>
+          <div className="flex items-center space-x-2 flex-shrink-0">
+            <img
+              src={headerLogo}
+              alt="Reef-swap"
+              className="w-20 h-auto sm:w-32"
+              width={131}
+              height={44}
+            />
           </div>
+
           <p className="text-sm text-gray-500 mt-1">Admin Dashboard</p>
         </div>
       )}
@@ -139,7 +144,7 @@ const SidebarContent = ({
           <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
             Main Menu
           </p>
-          <ul className="space-y-1">
+          <ul className="space-y-3">
             {menuItems.map((item) => {
               const Icon = item.icon;
               return (
@@ -149,7 +154,7 @@ const SidebarContent = ({
                     onClick={onLinkClick}
                     className={`flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
                       isActive(item.path)
-                        ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-md"
+                        ? "text-white py-3 px-4 rounded-2xl bg-gradient-to-br from-[#ae27a5] to-[#742cb2] shadow-[0_5px_20px_-10px_#742cb2]"
                         : "text-gray-700 hover:bg-gray-100 hover:text-purple-600"
                     }`}
                   >
@@ -164,12 +169,12 @@ const SidebarContent = ({
       </nav>
 
       {/* Bottom Section */}
-      <div className="p-4 border-t border-gray-200">
+      {/* <div className="p-4 border-t border-gray-200">
         <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-3">
           <p className="text-xs font-medium text-purple-800">Need Help?</p>
           <p className="text-xs text-purple-600 mt-1">Contact support team</p>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };
