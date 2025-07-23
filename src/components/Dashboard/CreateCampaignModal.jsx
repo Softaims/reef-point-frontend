@@ -21,7 +21,7 @@ const campaignSchema = z.object({
     .min(5, { message: "Target audience must be specified" }),
 });
 
-const CreateCampaignModal = ({ isOpen, onClose }) => {
+const CreateCampaignModal = ({ isOpen, onClose, onCreate }) => {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -46,13 +46,32 @@ const CreateCampaignModal = ({ isOpen, onClose }) => {
     e.preventDefault();
     setIsLoading(true);
 
+    // Required field validation before zod
+    const requiredErrors = {};
+    if (!formData.name.trim())
+      requiredErrors.name = "Campaign name is required";
+    if (!formData.description.trim())
+      requiredErrors.description = "Description is required";
+    if (!formData.budget || isNaN(Number(formData.budget)))
+      requiredErrors.budget = "Budget is required";
+    if (!formData.startDate)
+      requiredErrors.startDate = "Start date is required";
+    if (!formData.endDate) requiredErrors.endDate = "End date is required";
+    if (!formData.targetAudience.trim())
+      requiredErrors.targetAudience = "Target audience is required";
+
+    if (Object.keys(requiredErrors).length > 0) {
+      setErrors(requiredErrors);
+      setIsLoading(false);
+      return;
+    }
+
     try {
       // Convert budget to number for validation
       const dataToValidate = {
         ...formData,
         budget: Number.parseFloat(formData.budget) || 0,
       };
-
       // Validate form data
       const validatedData = campaignSchema.parse(dataToValidate);
 
@@ -62,7 +81,10 @@ const CreateCampaignModal = ({ isOpen, onClose }) => {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
-      console.log("Campaign created:", validatedData);
+      // Call onCreate to update parent state
+      if (onCreate) {
+        onCreate(validatedData);
+      }
 
       // Reset form and close modal
       setFormData({
@@ -80,11 +102,18 @@ const CreateCampaignModal = ({ isOpen, onClose }) => {
       alert("Campaign created successfully!");
     } catch (error) {
       if (error instanceof z.ZodError) {
+        // Show all errors for each field (array of messages)
         const fieldErrors = {};
         error.errors.forEach((err) => {
           if (err.path[0]) {
-            fieldErrors[err.path[0]] = err.message;
+            if (!fieldErrors[err.path[0]]) fieldErrors[err.path[0]] = [];
+            fieldErrors[err.path[0]].push(err.message);
           }
+        });
+        // If only one error per field, flatten to string for backward compatibility
+        Object.keys(fieldErrors).forEach((key) => {
+          if (fieldErrors[key].length === 1)
+            fieldErrors[key] = fieldErrors[key][0];
         });
         setErrors(fieldErrors);
       }
@@ -109,10 +138,19 @@ const CreateCampaignModal = ({ isOpen, onClose }) => {
     }
   };
 
+  // Disable main page scroll when modal is open
+  if (typeof window !== "undefined") {
+    if (isOpen) {
+      document.body.classList.add("overflow-hidden");
+    } else {
+      document.body.classList.remove("overflow-hidden");
+    }
+  }
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-white/30 backdrop-blur-[4px] flex items-center justify-center z-50 p-4 transition-all duration-300">
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         {/* Modal Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
@@ -400,14 +438,14 @@ const CreateCampaignModal = ({ isOpen, onClose }) => {
               type="button"
               onClick={handleClose}
               disabled={isLoading}
-              className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 px-6 py-3 border border-gray-300 cursor-pointer text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isLoading}
-              className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center"
+              className="flex-1 w-[12rem] h-[3rem] bg-gradient-to-br from-[#ae27a5] to-[#742cb2] shadow-[0_5px_20px_-10px_#742cb2]  text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 transform hover:scale-105 cursor-pointer hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center"
             >
               {isLoading ? (
                 <div className="flex items-center">

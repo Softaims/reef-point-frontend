@@ -1,16 +1,23 @@
-"use client";
-
 import { useState } from "react";
 import Sidebar from "../components/Dashboard/Sidebar";
 import Navbar from "../components/Dashboard/Navbar";
 import CampaignTable from "../components/Dashboard/CampaignTable";
-import { mockCampaigns } from "../data/mockCampaigns";
+// import { mockCampaigns } from "../data/mockCampaigns";
+import { mockCampaigns as initialMockCampaigns } from "../data/mockCampaigns";
 import { Plus, Filter, Download } from "lucide-react";
 import CreateCampaignModal from "../components/Dashboard/CreateCampaignModal";
 
 const CampaignsPage = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [campaigns, setCampaigns] = useState(initialMockCampaigns);
+
+  const handleAddCampaign = (newCampaign) => {
+    setCampaigns((prev) => [
+      { ...newCampaign, id: Date.now() }, // Add a unique id
+      ...prev,
+    ]);
+  };
   const handleCreateCampaign = () => {
     setIsCreateModalOpen(true);
   };
@@ -52,7 +59,8 @@ const CampaignsPage = () => {
           </div>
         </div>
 
-        <CampaignTable campaigns={mockCampaigns} />
+        {/* <CampaignTable campaigns={mockCampaigns} /> */}
+        <CampaignTable campaigns={campaigns} />
       </main>
 
       {/* Mobile Menu Overlay */}
@@ -66,6 +74,7 @@ const CampaignsPage = () => {
       <CreateCampaignModal
         isOpen={isCreateModalOpen}
         onClose={handleCloseModal}
+        onCreate={handleAddCampaign}
       />
     </div>
   );
