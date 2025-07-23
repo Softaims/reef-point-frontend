@@ -3,8 +3,11 @@ import Navbar from "../components/Dashboard/Navbar";
 import CampaignTable from "../components/Dashboard/CampaignTable";
 import { mockCampaigns } from "../data/mockCampaigns";
 import { Plus, TrendingUp, Users, DollarSign, Activity } from "lucide-react";
+import { useState } from "react";
 
 const Dashboard = () => {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   const stats = [
     {
       name: "Total Campaigns",
@@ -38,11 +41,14 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Sidebar />
-      <Navbar />
+      <Sidebar
+        isMobileMenuOpen={isMobileMenuOpen}
+        setIsMobileMenuOpen={setIsMobileMenuOpen}
+      />
+      <Navbar setIsMobileMenuOpen={setIsMobileMenuOpen} />
 
       {/* Main Content */}
-      <main className="ml-64 pt-16 p-6">
+      <main className="ml-64 pt-[6rem] p-6">
         {/* Page Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
