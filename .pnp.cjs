@@ -63,6 +63,7 @@ const RAW_RUNTIME_STATE =
           ["eslint-plugin-react-hooks", "virtual:c3a8419a21a9ffde6836719f92e2cb3f9941b3ce145ca6a52a662e841e07598f96d1fc2c95ec9c5bd8d38c9603dfe795dc912a3b03427f61f719a782b8a06636#npm:5.2.0"],\
           ["eslint-plugin-react-refresh", "virtual:c3a8419a21a9ffde6836719f92e2cb3f9941b3ce145ca6a52a662e841e07598f96d1fc2c95ec9c5bd8d38c9603dfe795dc912a3b03427f61f719a782b8a06636#npm:0.4.20"],\
           ["globals", "npm:16.2.0"],\
+          ["lucide-react", "virtual:c3a8419a21a9ffde6836719f92e2cb3f9941b3ce145ca6a52a662e841e07598f96d1fc2c95ec9c5bd8d38c9603dfe795dc912a3b03427f61f719a782b8a06636#npm:0.525.0"],\
           ["react", "npm:18.3.1"],\
           ["react-dom", "virtual:c3a8419a21a9ffde6836719f92e2cb3f9941b3ce145ca6a52a662e841e07598f96d1fc2c95ec9c5bd8d38c9603dfe795dc912a3b03427f61f719a782b8a06636#npm:18.3.1"],\
           ["react-icons", "virtual:c3a8419a21a9ffde6836719f92e2cb3f9941b3ce145ca6a52a662e841e07598f96d1fc2c95ec9c5bd8d38c9603dfe795dc912a3b03427f61f719a782b8a06636#npm:5.5.0"],\
@@ -70,7 +71,8 @@ const RAW_RUNTIME_STATE =
           ["rxjs", "npm:7.8.2"],\
           ["tailwindcss", "npm:4.1.10"],\
           ["vite", "virtual:c3a8419a21a9ffde6836719f92e2cb3f9941b3ce145ca6a52a662e841e07598f96d1fc2c95ec9c5bd8d38c9603dfe795dc912a3b03427f61f719a782b8a06636#npm:6.3.5"],\
-          ["ws", "virtual:513ba0d6d6e9ec26fca96a4e2f094c9e5e29bb07475194fd59a31ba0d9101f471bf32fb53d857b0a47383d7d3590a569cd2e00c580a440309ac4a99748e4b272#npm:8.18.2"]\
+          ["ws", "virtual:513ba0d6d6e9ec26fca96a4e2f094c9e5e29bb07475194fd59a31ba0d9101f471bf32fb53d857b0a47383d7d3590a569cd2e00c580a440309ac4a99748e4b272#npm:8.18.2"],\
+          ["zod", "npm:4.0.5"]\
         ],\
         "linkType": "SOFT"\
       }]\
@@ -18495,6 +18497,28 @@ const RAW_RUNTIME_STATE =
         "linkType": "HARD"\
       }]\
     ]],\
+    ["lucide-react", [\
+      ["npm:0.525.0", {\
+        "packageLocation": "../Users/hp/AppData/Local/Yarn/Berry/cache/lucide-react-npm-0.525.0-a734bf35e3-10c0.zip/node_modules/lucide-react/",\
+        "packageDependencies": [\
+          ["lucide-react", "npm:0.525.0"]\
+        ],\
+        "linkType": "SOFT"\
+      }],\
+      ["virtual:c3a8419a21a9ffde6836719f92e2cb3f9941b3ce145ca6a52a662e841e07598f96d1fc2c95ec9c5bd8d38c9603dfe795dc912a3b03427f61f719a782b8a06636#npm:0.525.0", {\
+        "packageLocation": "./.yarn/__virtual__/lucide-react-virtual-f03995f5da/2/Users/hp/AppData/Local/Yarn/Berry/cache/lucide-react-npm-0.525.0-a734bf35e3-10c0.zip/node_modules/lucide-react/",\
+        "packageDependencies": [\
+          ["lucide-react", "virtual:c3a8419a21a9ffde6836719f92e2cb3f9941b3ce145ca6a52a662e841e07598f96d1fc2c95ec9c5bd8d38c9603dfe795dc912a3b03427f61f719a782b8a06636#npm:0.525.0"],\
+          ["@types/react", "npm:19.1.8"],\
+          ["react", "npm:18.3.1"]\
+        ],\
+        "packagePeers": [\
+          "@types/react",\
+          "react"\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
     ["lunr", [\
       ["npm:2.3.9", {\
         "packageLocation": "../Users/hp/AppData/Local/Yarn/Berry/cache/lunr-npm-2.3.9-fa3aa9c2d6-10c0.zip/node_modules/lunr/",\
@@ -21093,6 +21117,7 @@ const RAW_RUNTIME_STATE =
           ["eslint-plugin-react-hooks", "virtual:c3a8419a21a9ffde6836719f92e2cb3f9941b3ce145ca6a52a662e841e07598f96d1fc2c95ec9c5bd8d38c9603dfe795dc912a3b03427f61f719a782b8a06636#npm:5.2.0"],\
           ["eslint-plugin-react-refresh", "virtual:c3a8419a21a9ffde6836719f92e2cb3f9941b3ce145ca6a52a662e841e07598f96d1fc2c95ec9c5bd8d38c9603dfe795dc912a3b03427f61f719a782b8a06636#npm:0.4.20"],\
           ["globals", "npm:16.2.0"],\
+          ["lucide-react", "virtual:c3a8419a21a9ffde6836719f92e2cb3f9941b3ce145ca6a52a662e841e07598f96d1fc2c95ec9c5bd8d38c9603dfe795dc912a3b03427f61f719a782b8a06636#npm:0.525.0"],\
           ["react", "npm:18.3.1"],\
           ["react-dom", "virtual:c3a8419a21a9ffde6836719f92e2cb3f9941b3ce145ca6a52a662e841e07598f96d1fc2c95ec9c5bd8d38c9603dfe795dc912a3b03427f61f719a782b8a06636#npm:18.3.1"],\
           ["react-icons", "virtual:c3a8419a21a9ffde6836719f92e2cb3f9941b3ce145ca6a52a662e841e07598f96d1fc2c95ec9c5bd8d38c9603dfe795dc912a3b03427f61f719a782b8a06636#npm:5.5.0"],\
@@ -21100,7 +21125,8 @@ const RAW_RUNTIME_STATE =
           ["rxjs", "npm:7.8.2"],\
           ["tailwindcss", "npm:4.1.10"],\
           ["vite", "virtual:c3a8419a21a9ffde6836719f92e2cb3f9941b3ce145ca6a52a662e841e07598f96d1fc2c95ec9c5bd8d38c9603dfe795dc912a3b03427f61f719a782b8a06636#npm:6.3.5"],\
-          ["ws", "virtual:513ba0d6d6e9ec26fca96a4e2f094c9e5e29bb07475194fd59a31ba0d9101f471bf32fb53d857b0a47383d7d3590a569cd2e00c580a440309ac4a99748e4b272#npm:8.18.2"]\
+          ["ws", "virtual:513ba0d6d6e9ec26fca96a4e2f094c9e5e29bb07475194fd59a31ba0d9101f471bf32fb53d857b0a47383d7d3590a569cd2e00c580a440309ac4a99748e4b272#npm:8.18.2"],\
+          ["zod", "npm:4.0.5"]\
         ],\
         "linkType": "SOFT"\
       }]\
@@ -24752,6 +24778,15 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "../Users/hp/AppData/Local/Yarn/Berry/cache/yocto-queue-npm-0.1.0-c6c9a7db29-10c0.zip/node_modules/yocto-queue/",\
         "packageDependencies": [\
           ["yocto-queue", "npm:0.1.0"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["zod", [\
+      ["npm:4.0.5", {\
+        "packageLocation": "../Users/hp/AppData/Local/Yarn/Berry/cache/zod-npm-4.0.5-e382141694-10c0.zip/node_modules/zod/",\
+        "packageDependencies": [\
+          ["zod", "npm:4.0.5"]\
         ],\
         "linkType": "HARD"\
       }]\

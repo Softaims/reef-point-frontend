@@ -4,6 +4,8 @@ import SplashScreenPage from "../pages/Auth/SplashScreenPage";
 import CreateAccountStep1 from "../pages/Auth/CreateAccountStep1";
 import CreateAccountStep2 from "../pages/Auth/CreateAccountStep2";
 import DepositFundsPage from "../pages/Auth/DepositFundsPage";
+import LoginPage from "../pages/LoginPage.jsx";
+
 import TokenPage from "../pages/Tokenpage.jsx";
 import ReefWalletConnect from "../ReefWalletConnect.jsx";
 export default function AppRoutes() {
@@ -11,6 +13,8 @@ export default function AppRoutes() {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/auth" element={<SplashScreenPage />} />
+      <Route path="/login" element={<LoginPage />} />
+
       {/* auth flow */}
       <Route path="/create-account/step-1" element={<CreateAccountStep1 />} />
       <Route path="/create-account/step-2" element={<CreateAccountStep2 />} />
