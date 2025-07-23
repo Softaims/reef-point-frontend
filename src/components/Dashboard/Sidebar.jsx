@@ -79,7 +79,15 @@ const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
         />
       </div>
 
-      {/* Mobile Sidebar */}
+      {/* Mobile Sidebar & Blur Overlay */}
+      {/* Blur overlay */}
+      {isMobileMenuOpen && (
+        <div
+          className="lg:hidden fixed inset-0 z-40 bg-white/30 backdrop-blur-[4px] transition-all duration-300"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+      {/* Sidebar */}
       <div
         className={`lg:hidden fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg border-r border-gray-200 transform transition-transform duration-300 ease-in-out ${
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
