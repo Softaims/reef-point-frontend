@@ -2,7 +2,8 @@ export const mockCampaigns = [
   {
     id: 1,
     name: "Summer Token Launch",
-    description: "Promotional campaign for new token release",
+    description:
+      "Promotional campaign for new token release Promotional campaign for new token releasePromotional campaign for new token release",
     status: "Active",
     startDate: "2024-01-15",
     endDate: "2024-03-15",

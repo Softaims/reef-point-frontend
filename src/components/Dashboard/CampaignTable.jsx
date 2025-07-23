@@ -38,25 +38,25 @@ const CampaignTable = ({ campaigns }) => {
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
       <div className="overflow-x-auto">
-        <table className="w-full">
+        <table className="w-full table-fixed">
           <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/4 max-w-[260px]">
                 Campaign Name
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/8 max-w-[120px]">
                 Status
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/8 max-w-[120px]">
                 Start Date
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/8 max-w-[120px]">
                 End Date
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/8 max-w-[120px]">
                 Budget
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/8 max-w-[100px]">
                 Actions
               </th>
             </tr>
@@ -67,27 +67,50 @@ const CampaignTable = ({ campaigns }) => {
                 key={campaign.id}
                 className="hover:bg-gray-50 transition-colors"
               >
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900">
+                <td className="px-6 py-4 max-w-[260px] align-top">
+                  <div
+                    className="text-sm font-medium text-gray-900 truncate"
+                    title={campaign.name}
+                  >
                     {campaign.name}
                   </div>
-                  <div className="text-sm text-gray-500">
+                  <div
+                    className="text-sm text-gray-500 truncate"
+                    title={campaign.description}
+                  >
                     {campaign.description}
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {getStatusBadge(campaign.status)}
+                <td className="px-6 py-4 max-w-[120px] align-top">
+                  <div className="truncate" title={campaign.status}>
+                    {getStatusBadge(campaign.status)}
+                  </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {formatDate(campaign.startDate)}
+                <td className="px-6 py-4 max-w-[120px] align-top text-sm text-gray-900">
+                  <div
+                    className="truncate"
+                    title={formatDate(campaign.startDate)}
+                  >
+                    {formatDate(campaign.startDate)}
+                  </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {formatDate(campaign.endDate)}
+                <td className="px-6 py-4 max-w-[120px] align-top text-sm text-gray-900">
+                  <div
+                    className="truncate"
+                    title={formatDate(campaign.endDate)}
+                  >
+                    {formatDate(campaign.endDate)}
+                  </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                  {formatBudget(campaign.budget)}
+                <td className="px-6 py-4 max-w-[120px] align-top text-sm font-medium text-gray-900">
+                  <div
+                    className="truncate"
+                    title={formatBudget(campaign.budget)}
+                  >
+                    {formatBudget(campaign.budget)}
+                  </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                <td className="px-6 py-4 max-w-[100px] align-top text-sm font-medium">
                   <div className="flex items-center space-x-2">
                     <button className="text-blue-600 hover:text-blue-800 p-1 hover:bg-blue-50 rounded transition-colors">
                       <Eye className="w-4 h-4" />

@@ -32,7 +32,7 @@ const CampaignsPage = () => {
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
-              <button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-4 lg:px-6 py-2 lg:py-3 rounded-lg font-medium transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2 text-sm lg:text-base">
+              <button className="text-white w-[12rem] h-[3rem] rounded-2xl bg-gradient-to-br from-[#ae27a5] to-[#742cb2] shadow-[0_5px_20px_-10px_#742cb2]  font-medium transition-all duration-200 transform hover:scale-105 hover:shadow-xl flex items-center justify-center space-x-2 text-sm lg:text-base cursor-pointer">
                 <Plus className="w-4 lg:w-5 h-4 lg:h-5" />
                 <span>Create Campaign</span>
               </button>
