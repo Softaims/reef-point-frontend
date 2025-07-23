@@ -6,9 +6,18 @@ import Navbar from "../components/Dashboard/Navbar";
 import CampaignTable from "../components/Dashboard/CampaignTable";
 import { mockCampaigns } from "../data/mockCampaigns";
 import { Plus, Filter, Download } from "lucide-react";
+import CreateCampaignModal from "../components/Dashboard/CreateCampaignModal";
 
 const CampaignsPage = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const handleCreateCampaign = () => {
+    setIsCreateModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsCreateModalOpen(false);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -32,7 +41,10 @@ const CampaignsPage = () => {
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
-              <button className="text-white w-[12rem] h-[3rem] rounded-2xl bg-gradient-to-br from-[#ae27a5] to-[#742cb2] shadow-[0_5px_20px_-10px_#742cb2]  font-medium transition-all duration-200 transform hover:scale-105 hover:shadow-xl flex items-center justify-center space-x-2 text-sm lg:text-base cursor-pointer">
+              <button
+                onClick={handleCreateCampaign}
+                className="text-white w-[12rem] h-[3rem] rounded-2xl bg-gradient-to-br from-[#ae27a5] to-[#742cb2] shadow-[0_5px_20px_-10px_#742cb2]  font-medium transition-all duration-200 transform hover:scale-105 hover:shadow-xl flex items-center justify-center space-x-2 text-sm lg:text-base cursor-pointer"
+              >
                 <Plus className="w-4 lg:w-5 h-4 lg:h-5" />
                 <span>Create Campaign</span>
               </button>
@@ -50,6 +62,11 @@ const CampaignsPage = () => {
           onClick={() => setIsMobileMenuOpen(false)}
         />
       )}
+      {/* Create Campaign Modal */}
+      <CreateCampaignModal
+        isOpen={isCreateModalOpen}
+        onClose={handleCloseModal}
+      />
     </div>
   );
 };
