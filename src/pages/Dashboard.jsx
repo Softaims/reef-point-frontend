@@ -53,7 +53,7 @@ const Dashboard = () => {
       <Navbar setIsMobileMenuOpen={setIsMobileMenuOpen} />
 
       {/* Main Content */}
-      <main className="lg:ml-64 pt-16 sm:pt-20 p-4 sm:p-6">
+      <main className="lg:ml-64 sm:pt-[7rem] pt-[11rem] p-4 sm:p-6">
         {/* Page Header */}
         <div className="mb-6 sm:mb-8">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
