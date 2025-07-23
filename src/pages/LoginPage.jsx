@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { z } from "zod";
 import headerLogo from "../assets/header-logo-reef.png";
@@ -13,6 +14,7 @@ const loginSchema = z.object({
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -32,18 +34,32 @@ const LoginPage = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    try {
-      // Validate form data
-      const validatedData = loginSchema.parse(formData);
+    // Required field validation (best practice: check before schema validation)
+    const newErrors = {};
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+    }
+    if (!formData.password.trim()) {
+      newErrors.password = "Password is required";
+    }
+    // If required fields are missing, show those errors only
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      setIsLoading(false);
+      return;
+    }
 
-      // Clear any existing errors
-      setErrors({});
+    try {
+      // Validate form data with zod
+      const validatedData = loginSchema.parse(formData);
+      console.log("🚀 ~ handleSubmit ~ validatedData:", validatedData);
 
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
-
+      setErrors({});
       console.log("Login successful:", validatedData);
-      // Handle successful login here
+      navigate("/dashboard");
+      // Redirect to dashboard on successful login
     } catch (error) {
       if (error instanceof z.ZodError) {
         const fieldErrors = {};
