@@ -1,6 +1,5 @@
-"use client";
-
 import { Bell, Search, User, ChevronDown, Menu } from "lucide-react";
+import headerLogo from "../../assets/header-logo-reef.png";
 
 const Navbar = ({ setIsMobileMenuOpen }) => {
   return (
@@ -19,11 +18,14 @@ const Navbar = ({ setIsMobileMenuOpen }) => {
 
             {/* Mobile Logo */}
             <div className="lg:hidden flex items-center">
-              <div className="text-lg font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                Reef
-              </div>
-              <div className="text-sm font-semibold text-gray-700 ml-1">
-                SWAP
+              <div className="flex items-center space-x-2 flex-shrink-0">
+                <img
+                  src={headerLogo}
+                  alt="Reef-swap"
+                  className="w-20 h-auto sm:w-32"
+                  width={131}
+                  height={44}
+                />
               </div>
             </div>
 

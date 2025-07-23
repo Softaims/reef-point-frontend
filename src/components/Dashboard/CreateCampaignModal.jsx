@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import { X, Calendar, DollarSign, Target, FileText } from "lucide-react";
 import { z } from "zod";

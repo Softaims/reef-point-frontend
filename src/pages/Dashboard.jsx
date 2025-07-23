@@ -1,9 +1,9 @@
+import { useState } from "react";
 import Sidebar from "../components/Dashboard/Sidebar";
 import Navbar from "../components/Dashboard/Navbar";
 import CampaignTable from "../components/Dashboard/CampaignTable";
 import { mockCampaigns } from "../data/mockCampaigns";
 import { Plus, TrendingUp, Users, DollarSign, Activity } from "lucide-react";
-import { useState } from "react";
 
 const Dashboard = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -39,6 +39,11 @@ const Dashboard = () => {
     },
   ];
 
+  const handleCreateCampaign = () => {
+    // Add your modal opening logic here
+    console.log("Create Campaign clicked");
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Sidebar
@@ -48,20 +53,23 @@ const Dashboard = () => {
       <Navbar setIsMobileMenuOpen={setIsMobileMenuOpen} />
 
       {/* Main Content */}
-      <main className="ml-64 sm:pt-[7rem] pt-[11rem] p-6">
+      <main className="lg:ml-64 pt-16 sm:pt-20 p-4 sm:p-6">
         {/* Page Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
+        <div className="mb-6 sm:mb-8">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
                 Marketing Campaigns
               </h1>
-              <p className="text-gray-600 mt-1">
+              <p className="text-gray-600 mt-1 text-sm sm:text-base">
                 Manage and monitor your marketing campaigns
               </p>
             </div>
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
-              <button className="text-white w-[12rem] h-[3rem] rounded-2xl bg-gradient-to-br from-[#ae27a5] to-[#742cb2] shadow-[0_5px_20px_-10px_#742cb2]  font-medium transition-all duration-200 transform hover:scale-105 hover:shadow-xl flex items-center justify-center space-x-2 text-sm lg:text-base cursor-pointer">
+            <div className="flex justify-center lg:justify-end">
+              <button
+                onClick={handleCreateCampaign}
+                className="text-white w-full sm:w-[12rem] h-[3rem] rounded-2xl bg-gradient-to-br from-[#ae27a5] to-[#742cb2] shadow-[0_5px_20px_-10px_#742cb2] font-medium transition-all duration-200 transform hover:scale-105 hover:shadow-xl flex items-center justify-center space-x-2 text-sm lg:text-base cursor-pointer"
+              >
                 <Plus className="w-4 lg:w-5 h-4 lg:h-5" />
                 <span>Create Campaign</span>
               </button>
@@ -70,28 +78,28 @@ const Dashboard = () => {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-6 lg:mb-8">
           {stats.map((stat) => {
             const Icon = stat.icon;
             return (
               <div
                 key={stat.name}
-                className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
+                className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 lg:p-6"
               >
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-gray-600">
                       {stat.name}
                     </p>
-                    <p className="text-2xl font-bold text-gray-900 mt-1">
+                    <p className="text-xl lg:text-2xl font-bold text-gray-900 mt-1">
                       {stat.value}
                     </p>
                   </div>
-                  <div className="bg-gradient-to-r from-purple-100 to-pink-100 p-3 rounded-lg">
-                    <Icon className="w-6 h-6 text-purple-600" />
+                  <div className="bg-gradient-to-r from-purple-100 to-pink-100 p-2 lg:p-3 rounded-lg">
+                    <Icon className="w-5 lg:w-6 h-5 lg:h-6 text-purple-600" />
                   </div>
                 </div>
-                <div className="mt-4 flex items-center">
+                <div className="mt-3 lg:mt-4 flex items-center">
                   <span
                     className={`text-sm font-medium ${
                       stat.changeType === "increase"
@@ -111,20 +119,20 @@ const Dashboard = () => {
         </div>
 
         {/* Campaigns Table */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold text-gray-900">
+        <div className="mb-6 lg:mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 mb-4">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
               Recent Campaigns
             </h2>
-            <div className="flex items-center space-x-3">
-              <select className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
+              <select className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer">
                 <option>All Status</option>
                 <option>Active</option>
                 <option>Paused</option>
                 <option>Completed</option>
                 <option>Draft</option>
               </select>
-              <button className="text-purple-600 hover:text-purple-700 text-sm font-medium">
+              <button className="text-purple-600 hover:text-purple-700 text-sm font-medium cursor-pointer hover:underline transition-colors">
                 View All
               </button>
             </div>
@@ -132,6 +140,14 @@ const Dashboard = () => {
           <CampaignTable campaigns={mockCampaigns} />
         </div>
       </main>
+
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
     </div>
   );
 };
