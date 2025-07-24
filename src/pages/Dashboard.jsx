@@ -5,9 +5,12 @@ import CampaignTable from "../components/Dashboard/CampaignTable";
 import { mockCampaigns } from "../data/mockCampaigns";
 import { Plus, TrendingUp, Users, DollarSign, Activity } from "lucide-react";
 import Uik from "@reef-chain/ui-kit";
+import { useAuth } from "../contexts/AuthContext";
 
 const Dashboard = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user } = useAuth();
+  console.log("🚀 ~ Dashboard ~ user:", user);
 
   const stats = [
     {

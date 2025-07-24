@@ -3,10 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { z } from "zod";
 import headerLogo from "../assets/header-logo-reef.png";
+import { useAuth } from "../contexts/AuthContext";
 
 // Zod validation schema
 const loginSchema = z.object({
-  email: z.string().email({ message: "Please enter a valid email address" }),
+  username: z
+    .string()
+    .min(3, { message: "Username must be at least 3 characters long" }),
   password: z
     .string()
     .min(6, { message: "Password must be at least 6 characters long" }),
@@ -16,9 +19,11 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    email: "",
+    username: "",
     password: "",
   });
+  const { login } = useAuth();
+
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
@@ -36,8 +41,8 @@ const LoginPage = () => {
 
     // Required field validation (best practice: check before schema validation)
     const newErrors = {};
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
+    if (!formData.username.trim()) {
+      newErrors.username = "Username is required";
     }
     if (!formData.password.trim()) {
       newErrors.password = "Password is required";
@@ -52,15 +57,15 @@ const LoginPage = () => {
     try {
       // Validate form data with zod
       const validatedData = loginSchema.parse(formData);
-      console.log("🚀 ~ handleSubmit ~ validatedData:", validatedData);
+      // Attempt login with validated data
+      const response = await login(validatedData);
+      console.log("🚀 ~ handleSubmit ~ response:", response);
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
       setErrors({});
-      console.log("Login successful:", validatedData);
       navigate("/dashboard");
-      // Redirect to dashboard on successful login
     } catch (error) {
+      console.log("🚀 ~ handleSubmit ~ error:", error);
+      // Zod validation errors
       if (error instanceof z.ZodError) {
         const fieldErrors = {};
         error.errors.forEach((err) => {
@@ -69,6 +74,20 @@ const LoginPage = () => {
           }
         });
         setErrors(fieldErrors);
+      } else if (error?.response?.data?.message) {
+        // Show backend error message directly
+        setErrors({
+          general: error.response.data.message,
+        });
+      } else if (error?.message) {
+        // Show error.message if present
+        setErrors({
+          general: error.message,
+        });
+      } else {
+        setErrors({
+          general: "Login failed. Please try again.",
+        });
       }
     } finally {
       setIsLoading(false);
@@ -122,25 +141,27 @@ const LoginPage = () => {
               {/* Email Field */}
               <div className="space-y-2">
                 <label
-                  htmlFor="email"
+                  htmlFor="username"
                   className="block text-sm font-semibold text-gray-700 tracking-wide"
                   style={{ fontFamily: "Inter, sans-serif" }}
                 >
-                  Email Address
+                  Username
                 </label>
                 <input
-                  id="email"
-                  type="email"
-                  placeholder="Enter your email"
-                  value={formData.email}
-                  onChange={(e) => handleInputChange("email", e.target.value)}
+                  id="username"
+                  type="text"
+                  placeholder="Enter your username"
+                  value={formData.username}
+                  onChange={(e) =>
+                    handleInputChange("username", e.target.value)
+                  }
                   className={`w-full h-12 px-4 border-2 placeholder:text-sm rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-200/40 ${
-                    errors.email
+                    errors.username
                       ? "border-red-300 focus:border-red-500 bg-red-50/50"
                       : "border-gray-200 focus:border-purple-500 bg-white hover:border-gray-100"
                   }`}
                 />
-                {errors.email && (
+                {errors.username && (
                   <p
                     className="text-xs text-red-600 mt-1 flex items-center font-medium"
                     style={{ fontFamily: "Inter, sans-serif" }}
@@ -156,7 +177,7 @@ const LoginPage = () => {
                         clipRule="evenodd"
                       />
                     </svg>
-                    {errors.email}
+                    {errors.username}
                   </p>
                 )}
               </div>
@@ -243,6 +264,16 @@ const LoginPage = () => {
                   "Sign In"
                 )}
               </button>
+
+              {/* General error message */}
+              {errors.general && (
+                <p
+                  className="text-xs text-red-600 mt-2 text-center font-medium"
+                  style={{ fontFamily: "Inter, sans-serif" }}
+                >
+                  {errors.general}
+                </p>
+              )}
             </form>
 
             {/* <div className="mt-6 text-center">

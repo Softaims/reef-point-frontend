@@ -1,7 +1,10 @@
 import { Bell, Search, User, ChevronDown, Menu } from "lucide-react";
 import headerLogo from "../../assets/header-logo-reef.png";
+import { useAuth } from "../../contexts/AuthContext";
 
 const Navbar = ({ setIsMobileMenuOpen }) => {
+  const { user } = useAuth();
+  console.log("🚀 ~ Navbar ~ user:", user);
   return (
     <header className="bg-white shadow-sm border-b border-gray-200 fixed top-0 right-0 left-0 lg:left-64 z-40 overflow-x-hidden">
       <div className="px-4 lg:px-6 py-4">
@@ -63,7 +66,9 @@ const Navbar = ({ setIsMobileMenuOpen }) => {
                 <User className="w-4 h-4 text-white" />
               </div>
               <div className="hidden md:block">
-                <p className="text-sm font-medium text-gray-900">Admin User</p>
+                <p className="text-sm font-medium text-gray-900">
+                  {user?.username || "Admin User"}
+                </p>
                 <p className="text-xs text-gray-500">admin@reefswap.com</p>
               </div>
               <ChevronDown className="w-4 h-4 text-gray-400 hidden sm:block" />

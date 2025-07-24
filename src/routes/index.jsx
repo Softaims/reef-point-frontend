@@ -1,11 +1,6 @@
 import { Routes, Route } from "react-router-dom";
+import ProtectedRoute from "./ProtectedRoute";
 import Home from "../pages/HomePage";
-// import SplashScreenPage from "../pages/Auth/SplashScreenPage";
-// import CreateAccountStep1 from "../pages/Auth/CreateAccountStep1";
-// import CreateAccountStep2 from "../pages/Auth/CreateAccountStep2";
-// import DepositFundsPage from "../pages/Auth/DepositFundsPage";
-// import TokenPage from "../pages/Tokenpage.jsx";
-
 import LoginPage from "../pages/LoginPage.jsx";
 import Dashboard from "../pages/Dashboard.jsx";
 import CampaignsPage from "../pages/CampaignsPage.jsx";
@@ -15,17 +10,23 @@ export default function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
-      {/* <Route path="/auth" element={<SplashScreenPage />} /> */}
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/dashboard/campaigns" element={<CampaignsPage />} />
-      {/* auth flow
-      <Route path="/create-account/step-1" element={<CreateAccountStep1 />} />
-      <Route path="/create-account/step-2" element={<CreateAccountStep2 />} />
-      <Route path="/create-account/step-3" element={<DepositFundsPage />} /> */}
-      {/* home screen  */}
-      {/* <Route path="/tokens" element={<TokenPage />} /> */}
-      {/* <Route path="/pools" element={<ReefWalletConnect />} /> */}
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/dashboard/campaigns"
+        element={
+          <ProtectedRoute>
+            <CampaignsPage />
+          </ProtectedRoute>
+        }
+      />
     </Routes>
   );
 }
