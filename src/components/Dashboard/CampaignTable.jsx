@@ -1,21 +1,14 @@
-import { Edit, Trash2, Eye } from "lucide-react";
+import { Edit, Trash2, Eye, Calendar, TrendingUp } from "lucide-react";
 
 const CampaignTable = ({ campaigns, onDeleteCampaign }) => {
-  const getStatusBadge = (status) => {
-    const statusStyles = {
-      Active: "bg-green-100 text-green-800",
-      Paused: "bg-yellow-100 text-yellow-800",
-      Completed: "bg-blue-100 text-blue-800",
-      Draft: "bg-gray-100 text-gray-800",
-    };
-
+  const getStatusBadge = (isActive, label) => {
     return (
       <span
         className={`px-2 py-1 text-xs font-medium rounded-full ${
-          statusStyles[status] || statusStyles.Draft
+          isActive ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"
         }`}
       >
-        {status}
+        {isActive ? `${label} Active` : `${label} Inactive`}
       </span>
     );
   };
@@ -25,14 +18,20 @@ const CampaignTable = ({ campaigns, onDeleteCampaign }) => {
       year: "numeric",
       month: "short",
       day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
-  const formatBudget = (budget) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(budget);
+  const getActiveSeasons = (campaign) => {
+    const activeSeasons = [];
+    if (campaign.isBootstrapping) activeSeasons.push("Bootstrapping");
+    if (campaign.isEarlySzn) activeSeasons.push("Early Season");
+    if (campaign.isMemeSzn) activeSeasons.push("Meme Season");
+
+    return activeSeasons.length > 0
+      ? activeSeasons.join(", ")
+      : "No Active Seasons";
   };
 
   return (
@@ -42,19 +41,22 @@ const CampaignTable = ({ campaigns, onDeleteCampaign }) => {
           <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Campaign Name
+                Pool ID
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Status
+                Total Pools
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Start Date
+                Active Seasons
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                End Date
+                Bootstrapping
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Budget
+                Early Season
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Meme Season
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Actions
@@ -68,27 +70,70 @@ const CampaignTable = ({ campaigns, onDeleteCampaign }) => {
                 className="hover:bg-gray-50 transition-colors"
               >
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900">
-                    {campaign.name}
-                  </div>
-                  <div className="text-sm text-gray-500">
-                    {campaign.description}
+                  <div className="flex items-center">
+                    <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                      {campaign.id}
+                    </div>
+                    <div className="ml-3">
+                      <div className="text-sm font-medium text-gray-900">
+                        Pool #{campaign.id}
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        ID: {campaign.id}
+                      </div>
+                    </div>
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  {getStatusBadge(campaign.status)}
+                  <div className="flex items-center">
+                    <TrendingUp className="w-4 h-4 text-purple-600 mr-2" />
+                    <span className="text-sm font-medium text-gray-900">
+                      {campaign.totalPools}
+                    </span>
+                  </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {formatDate(campaign.startDate)}
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-sm text-gray-900">
+                    {getActiveSeasons(campaign)}
+                  </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {formatDate(campaign.endDate)}
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="space-y-1">
+                    {getStatusBadge(campaign.isBootstrapping, "Bootstrap")}
+                    <div className="flex items-center text-xs text-gray-500">
+                      <Calendar className="w-3 h-3 mr-1" />
+                      {formatDate(campaign.bootstrappingStartDate)}
+                    </div>
+                  </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                  {formatBudget(campaign.budget)}
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="space-y-1">
+                    {getStatusBadge(campaign.isEarlySzn, "Early")}
+                    <div className="flex items-center text-xs text-gray-500">
+                      <Calendar className="w-3 h-3 mr-1" />
+                      {formatDate(campaign.earlySznStartDate)}
+                    </div>
+                  </div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="space-y-1">
+                    {getStatusBadge(campaign.isMemeSzn, "Meme")}
+                    <div className="flex items-center text-xs text-gray-500">
+                      <Calendar className="w-3 h-3 mr-1" />
+                      {formatDate(campaign.memeSznStartDate)}
+                    </div>
+                  </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <div className="flex items-center space-x-8">
+                  <div className="flex items-center space-x-6">
+                    <div className="flex flex-col items-center group">
+                      <button className="text-blue-600 hover:text-blue-800 p-1 hover:bg-blue-50 rounded transition-colors">
+                        <Eye className="w-4 h-4 cursor-pointer" />
+                      </button>
+                      <span className="text-xs mt-1 text-blue-600 group-hover:text-blue-800 transition-colors">
+                        View
+                      </span>
+                    </div>
                     <div className="flex flex-col items-center group">
                       <button className="text-purple-600 hover:text-purple-800 p-1 hover:bg-purple-50 rounded transition-colors">
                         <Edit className="w-4 h-4 cursor-pointer" />
