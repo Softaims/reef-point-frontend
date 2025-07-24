@@ -12,6 +12,7 @@ import Uik from "@reef-chain/ui-kit";
 const CampaignsPage = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [editingCampaign, setEditingCampaign] = useState(null);
   const [campaigns, setCampaigns] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [fetchError, setFetchError] = useState(null);
@@ -43,15 +44,38 @@ const CampaignsPage = () => {
   }, []);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [campaignToDelete, setCampaignToDelete] = useState(null);
-  const handleAddCampaign = (newCampaign) => {
-    setCampaigns((prev) => [{ ...newCampaign, id: Date.now() }, ...prev]);
+  // Add or update campaign
+  const handleSaveCampaign = (campaign) => {
+    if (editingCampaign) {
+      // Update existing
+      setCampaigns((prev) =>
+        prev.map((c) =>
+          c.id === editingCampaign.id ? { ...c, ...campaign } : c
+        )
+      );
+    } else {
+      // Add new
+      setCampaigns((prev) => [{ ...campaign, id: Date.now() }, ...prev]);
+    }
+    setEditingCampaign(null);
+    setIsCreateModalOpen(false);
   };
+
+  // Open modal for create
   const handleCreateCampaign = () => {
+    setEditingCampaign(null);
+    setIsCreateModalOpen(true);
+  };
+
+  // Open modal for edit
+  const handleEditCampaign = (campaign) => {
+    setEditingCampaign(campaign);
     setIsCreateModalOpen(true);
   };
 
   const handleCloseModal = () => {
     setIsCreateModalOpen(false);
+    setEditingCampaign(null);
   };
   // Delete modal handlers
   const handleDeleteCampaign = (campaignId) => {
@@ -130,6 +154,7 @@ const CampaignsPage = () => {
           <CampaignTable
             campaigns={campaigns}
             onDeleteCampaign={handleOpenDeleteModal}
+            onEditCampaign={handleEditCampaign}
           />
         )}
       </main>
@@ -140,7 +165,9 @@ const CampaignsPage = () => {
       <CreateCampaignModal
         isOpen={isCreateModalOpen}
         onClose={handleCloseModal}
-        onCreate={handleAddCampaign}
+        onCreate={handleSaveCampaign}
+        initialData={editingCampaign}
+        isEdit={!!editingCampaign}
       />
       <DeleteCampaignModal
         isOpen={isDeleteModalOpen}

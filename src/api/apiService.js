@@ -58,6 +58,15 @@ const apiService = {
       throw error.response?.data || { message: "Failed to fetch campaigns" };
     }
   },
+  // Update campaign
+  updateCampaign: async (payload) => {
+    try {
+      const response = await axios.post(`settings/update/`, payload);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || { message: "Failed to update campaign" };
+    }
+  },
   // Refresh token
   refreshToken: async (payload) => {
     try {

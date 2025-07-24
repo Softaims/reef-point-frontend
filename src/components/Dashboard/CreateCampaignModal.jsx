@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import apiService from "../../api/apiService";
 import { X, Calendar, TrendingUp, Settings, Zap } from "lucide-react";
 import { z } from "zod";
 
@@ -19,7 +20,14 @@ const campaignSchema = z.object({
     .min(1, { message: "Meme season start date is required" }),
 });
 
-const CreateCampaignModal = ({ isOpen, onClose, onCreate }) => {
+const CreateCampaignModal = ({
+  isOpen,
+  onClose,
+  onCreate,
+  initialData,
+  isEdit,
+}) => {
+  console.log("🚀 ~ CreateCampaignModal ~ initialData:", initialData);
   const [formData, setFormData] = useState({
     totalPools: "",
     isBootstrapping: false,
@@ -31,6 +39,44 @@ const CreateCampaignModal = ({ isOpen, onClose, onCreate }) => {
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+
+  // Prefill form for edit
+  // Helper to convert ISO string to 'yyyy-MM-ddTHH:mm' for datetime-local
+  const toDatetimeLocal = (isoString) => {
+    if (!isoString) return "";
+    const date = new Date(isoString);
+    // Pad with zeros
+    const pad = (n) => n.toString().padStart(2, "0");
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
+      date.getDate()
+    )}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+  };
+
+  useEffect(() => {
+    if (isOpen && initialData) {
+      setFormData({
+        totalPools: initialData.totalPools?.toString() || "",
+        isBootstrapping: !!initialData.isBootstrapping,
+        bootstrappingStartDate: toDatetimeLocal(
+          initialData.bootstrappingStartDate
+        ),
+        isEarlySzn: !!initialData.isEarlySzn,
+        earlySznStartDate: toDatetimeLocal(initialData.earlySznStartDate),
+        isMemeSzn: !!initialData.isMemeSzn,
+        memeSznStartDate: toDatetimeLocal(initialData.memeSznStartDate),
+      });
+    } else if (isOpen && !initialData) {
+      setFormData({
+        totalPools: "",
+        isBootstrapping: false,
+        bootstrappingStartDate: "",
+        isEarlySzn: false,
+        earlySznStartDate: "",
+        isMemeSzn: false,
+        memeSznStartDate: "",
+      });
+    }
+  }, [isOpen, initialData]);
 
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -75,28 +121,42 @@ const CreateCampaignModal = ({ isOpen, onClose, onCreate }) => {
       // Clear any existing errors
       setErrors({});
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      // Prepare payload for API (convert datetime-local to ISO)
+      const toISO = (val) => (val ? new Date(val).toISOString() : "");
+      const payload = {
+        ...validatedData,
+        bootstrappingStartDate: toISO(formData.bootstrappingStartDate),
+        earlySznStartDate: toISO(formData.earlySznStartDate),
+        memeSznStartDate: toISO(formData.memeSznStartDate),
+      };
+      if (isEdit && initialData?.id) {
+        payload.id = initialData.id;
+        await apiService.updateCampaign(payload);
+      }
+
+      // Simulate API call for create (remove this if you wire up create to backend)
+      if (!isEdit) {
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+      }
 
       // Call onCreate to update parent state
       if (onCreate) {
-        onCreate(validatedData);
+        onCreate(isEdit ? { ...payload } : validatedData);
       }
 
-      // Reset form and close modal
-      setFormData({
-        totalPools: "",
-        isBootstrapping: false,
-        bootstrappingStartDate: "",
-        isEarlySzn: false,
-        earlySznStartDate: "",
-        isMemeSzn: false,
-        memeSznStartDate: "",
-      });
+      // Reset form and close modal (only for create)
+      if (!isEdit) {
+        setFormData({
+          totalPools: "",
+          isBootstrapping: false,
+          bootstrappingStartDate: "",
+          isEarlySzn: false,
+          earlySznStartDate: "",
+          isMemeSzn: false,
+          memeSznStartDate: "",
+        });
+      }
       onClose();
-
-      // You could show a success toast here
-      // alert("Pool configuration created successfully!");
     } catch (error) {
       if (error instanceof z.ZodError) {
         // Show all errors for each field (array of messages)
@@ -153,10 +213,14 @@ const CreateCampaignModal = ({ isOpen, onClose, onCreate }) => {
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <div>
             <h2 className="text-2xl font-bold text-gray-900">
-              Create New Pool Configuration
+              {isEdit
+                ? "Edit Pool Configuration"
+                : "Create New Pool Configuration"}
             </h2>
             <p className="text-gray-600 mt-1">
-              Set up your pool seasons and configuration
+              {isEdit
+                ? "Update your pool seasons and configuration"
+                : "Set up your pool seasons and configuration"}
             </p>
           </div>
           <button
@@ -431,8 +495,12 @@ const CreateCampaignModal = ({ isOpen, onClose, onCreate }) => {
               {isLoading ? (
                 <div className="flex items-center">
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                  Creating Configuration...
+                  {isEdit
+                    ? "Updating Configuration..."
+                    : "Creating Configuration..."}
                 </div>
+              ) : isEdit ? (
+                "Update Configuration"
               ) : (
                 "Create Configuration"
               )}

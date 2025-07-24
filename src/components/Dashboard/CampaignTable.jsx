@@ -1,6 +1,6 @@
 import { Edit, Trash2, Eye, Calendar, TrendingUp } from "lucide-react";
 
-const CampaignTable = ({ campaigns, onDeleteCampaign }) => {
+const CampaignTable = ({ campaigns, onDeleteCampaign, onEditCampaign }) => {
   const getStatusBadge = (isActive, label) => {
     return (
       <span
@@ -127,7 +127,12 @@ const CampaignTable = ({ campaigns, onDeleteCampaign }) => {
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <div className="flex items-center space-x-6">
                     <div className="flex flex-col items-center group">
-                      <button className="text-purple-600 hover:text-purple-800 p-1 hover:bg-purple-50 rounded transition-colors">
+                      <button
+                        className="text-purple-600 hover:text-purple-800 p-1 hover:bg-purple-50 rounded transition-colors"
+                        onClick={() =>
+                          onEditCampaign && onEditCampaign(campaign)
+                        }
+                      >
                         <Edit className="w-4 h-4 cursor-pointer" />
                       </button>
                       <span className="text-xs mt-1 text-purple-600 group-hover:text-purple-800 transition-colors">

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Sidebar from "../components/Dashboard/Sidebar";
 import Navbar from "../components/Dashboard/Navbar";
 import CampaignTable from "../components/Dashboard/CampaignTable";
+import CreateCampaignModal from "../components/Dashboard/CreateCampaignModal";
 import { mockCampaigns } from "../data/mockCampaigns";
 import { Plus, TrendingUp, Users, DollarSign, Activity } from "lucide-react";
 import Uik from "@reef-chain/ui-kit";
@@ -14,6 +15,8 @@ const Dashboard = () => {
   const [campaigns, setCampaigns] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [fetchError, setFetchError] = useState(null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [editingCampaign, setEditingCampaign] = useState(null);
 
   const stats = [
     {
@@ -46,9 +49,36 @@ const Dashboard = () => {
     },
   ];
 
+  // Open modal for create
   const handleCreateCampaign = () => {
-    // Add your modal opening logic here
-    console.log("Create Campaign clicked");
+    setEditingCampaign(null);
+    setIsCreateModalOpen(true);
+  };
+
+  // Open modal for edit
+  const handleEditCampaign = (campaign) => {
+    setEditingCampaign(campaign);
+    setIsCreateModalOpen(true);
+  };
+
+  // Add or update campaign
+  const handleSaveCampaign = (campaign) => {
+    if (editingCampaign) {
+      setCampaigns((prev) =>
+        prev.map((c) =>
+          c.id === editingCampaign.id ? { ...c, ...campaign } : c
+        )
+      );
+    } else {
+      setCampaigns((prev) => [{ ...campaign, id: Date.now() }, ...prev]);
+    }
+    setEditingCampaign(null);
+    setIsCreateModalOpen(false);
+  };
+
+  const handleCloseModal = () => {
+    setIsCreateModalOpen(false);
+    setEditingCampaign(null);
   };
   // Fetch campaigns from backend on mount
   useEffect(() => {
@@ -194,8 +224,19 @@ const Dashboard = () => {
           ) : fetchError ? (
             <div className="text-center text-red-500 py-8">{fetchError}</div>
           ) : (
-            <CampaignTable campaigns={campaigns} />
+            <CampaignTable
+              campaigns={campaigns}
+              onEditCampaign={handleEditCampaign}
+            />
           )}
+          {/* Create/Edit Campaign Modal */}
+          <CreateCampaignModal
+            isOpen={isCreateModalOpen}
+            onClose={handleCloseModal}
+            onCreate={handleSaveCampaign}
+            initialData={editingCampaign}
+            isEdit={!!editingCampaign}
+          />
         </div>
       </main>
     </div>
