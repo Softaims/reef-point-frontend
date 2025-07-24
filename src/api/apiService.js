@@ -48,6 +48,16 @@ const apiService = {
     }
   },
 
+  // Get all campaigns
+  getCampaigns: async () => {
+    try {
+      const response = await axios.get("/settings");
+      return response.data;
+    } catch (error) {
+      console.log("🚀 ~ getCampaigns: ~ error:", error.response?.data || error);
+      throw error.response?.data || { message: "Failed to fetch campaigns" };
+    }
+  },
   // Refresh token
   refreshToken: async (payload) => {
     try {

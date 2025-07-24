@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Sidebar from "../components/Dashboard/Sidebar";
 import Navbar from "../components/Dashboard/Navbar";
 import CampaignTable from "../components/Dashboard/CampaignTable";
@@ -6,11 +6,14 @@ import { mockCampaigns } from "../data/mockCampaigns";
 import { Plus, TrendingUp, Users, DollarSign, Activity } from "lucide-react";
 import Uik from "@reef-chain/ui-kit";
 import { useAuth } from "../contexts/AuthContext";
+import apiService from "../api/apiService";
 
 const Dashboard = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user } = useAuth();
-  console.log("🚀 ~ Dashboard ~ user:", user);
+  const [campaigns, setCampaigns] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
 
   const stats = [
     {
@@ -47,6 +50,33 @@ const Dashboard = () => {
     // Add your modal opening logic here
     console.log("Create Campaign clicked");
   };
+  // Fetch campaigns from backend on mount
+  useEffect(() => {
+    const fetchCampaigns = async () => {
+      console.log("🚀 ~ fetchCampaigns ~ user:");
+      setIsLoading(true);
+      setFetchError(null);
+      try {
+        const response = await apiService.getCampaigns();
+        console.log("🚀 ~ fetchCampaigns ~ response: on dashbaord", response);
+        // Support array, {data: array}, or single object
+        let data = [];
+        if (Array.isArray(response)) {
+          data = response;
+        } else if (response && Array.isArray(response.data)) {
+          data = response.data;
+        } else if (response && typeof response === "object") {
+          data = [response];
+        }
+        setCampaigns(data);
+      } catch (err) {
+        setFetchError(err.message || "Failed to fetch campaigns");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchCampaigns();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -154,7 +184,18 @@ const Dashboard = () => {
               </select>
             </div>
           </div>
-          <CampaignTable campaigns={mockCampaigns} />
+          {isLoading ? (
+            <div className="flex justify-center items-center py-12">
+              <div className="w-8 h-8 border-2 border-purple-400 border-t-transparent rounded-full animate-spin"></div>
+              <span className="ml-3 text-gray-500 text-sm">
+                Loading campaigns...
+              </span>
+            </div>
+          ) : fetchError ? (
+            <div className="text-center text-red-500 py-8">{fetchError}</div>
+          ) : (
+            <CampaignTable campaigns={campaigns} />
+          )}
         </div>
       </main>
     </div>
