@@ -127,14 +127,6 @@ const CampaignTable = ({ campaigns, onDeleteCampaign }) => {
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <div className="flex items-center space-x-6">
                     <div className="flex flex-col items-center group">
-                      <button className="text-blue-600 hover:text-blue-800 p-1 hover:bg-blue-50 rounded transition-colors">
-                        <Eye className="w-4 h-4 cursor-pointer" />
-                      </button>
-                      <span className="text-xs mt-1 text-blue-600 group-hover:text-blue-800 transition-colors">
-                        View
-                      </span>
-                    </div>
-                    <div className="flex flex-col items-center group">
                       <button className="text-purple-600 hover:text-purple-800 p-1 hover:bg-purple-50 rounded transition-colors">
                         <Edit className="w-4 h-4 cursor-pointer" />
                       </button>
