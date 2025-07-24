@@ -98,7 +98,7 @@ const CampaignTable = ({ campaigns, onDeleteCampaign }) => {
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="space-y-1">
+                  <div className="space-y-1 flex flex-col gap-1 items-start">
                     {getStatusBadge(campaign.isBootstrapping, "Bootstrap")}
                     <div className="flex items-center text-xs text-gray-500">
                       <Calendar className="w-3 h-3 mr-1" />
@@ -107,7 +107,7 @@ const CampaignTable = ({ campaigns, onDeleteCampaign }) => {
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="space-y-1">
+                  <div className="space-y-1 flex flex-col gap-1 items-start">
                     {getStatusBadge(campaign.isEarlySzn, "Early")}
                     <div className="flex items-center text-xs text-gray-500">
                       <Calendar className="w-3 h-3 mr-1" />
@@ -116,7 +116,7 @@ const CampaignTable = ({ campaigns, onDeleteCampaign }) => {
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="space-y-1">
+                  <div className="space-y-1 flex flex-col gap-1 items-start">
                     {getStatusBadge(campaign.isMemeSzn, "Meme")}
                     <div className="flex items-center text-xs text-gray-500">
                       <Calendar className="w-3 h-3 mr-1" />
