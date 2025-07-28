@@ -13,6 +13,7 @@ import { Provider } from "@reef-chain/evm-provider";
 import { WsProvider } from "@polkadot/api";
 import { u8aToBn } from "@polkadot/util";
 import { useAuth } from "../../contexts/AuthContext";
+import { useRef } from "react";
 
 export default function SettingsPopup({ isOpen, onClose }) {
   const [selectedNetwork, setSelectedNetwork] = useState("Mainnet");
@@ -23,6 +24,7 @@ export default function SettingsPopup({ isOpen, onClose }) {
   const [evmAddresses, setEvmAddresses] = useState({});
   const [loading, setLoading] = useState(false);
   const [copiedAddress, setCopiedAddress] = useState(null);
+  const modalScrollRef = useRef(null);
 
   const toggleDropdown = () => {
     setIsButton(!isButtonOpen);
@@ -124,11 +126,16 @@ export default function SettingsPopup({ isOpen, onClose }) {
       }
     } else {
       document.body.classList.remove("overflow-hidden");
-      document.body.classList.add("overflow-hidden");
     }
     return () => {
       document.body.classList.remove("overflow-hidden");
     };
+  }, [isOpen]);
+  // Always scroll modal to top when opened
+  useEffect(() => {
+    if (isOpen && modalScrollRef.current) {
+      modalScrollRef.current.scrollTop = 0;
+    }
   }, [isOpen]);
 
   return (
@@ -146,8 +153,8 @@ export default function SettingsPopup({ isOpen, onClose }) {
         }`}
         onClick={onClose}
       ></div>
-
       <div
+        ref={modalScrollRef}
         className={`relative w-full h-full bg-[#EEEBF6] shadow-xl transform transition-all duration-[1800ms] ease-in-out overflow-y-auto ${
           isOpen
             ? "translate-y-0 scale-y-100 opacity-100"
