@@ -1,89 +1,17 @@
-export default function LeaderboardTable() {
-  const leaderboardData = [
-    {
-      rank: 1,
-      user: "5pl234...88fflaa",
-      actionPoints: "10,787,595,291",
-      referralPoints: "309,773,608",
-      total: "11,097,368,900",
-    },
-    {
-      rank: 2,
-      user: "5pl234...88fflove",
-      actionPoints: "10,499,139,118",
-      referralPoints: "0",
-      total: "10,499,139,118",
-    },
-    {
-      rank: 3,
-      user: "5pl234...88fGabb",
-      actionPoints: "10,129,979,028",
-      referralPoints: "0",
-      total: "10,129,979,028",
-      highlighted: true,
-    },
-    {
-      rank: 4,
-      user: "5pl234...88fbbcc",
-      actionPoints: "8,686,801,069",
-      referralPoints: "0",
-      total: "8,686,801,069",
-    },
-    {
-      rank: 5,
-      user: "5pl234...88fddee",
-      actionPoints: "7,601,102,649",
-      referralPoints: "0",
-      total: "7,601,102,649",
-    },
-  ];
+import { useState } from "react";
 
-  const bottomData = [
-    {
-      rank: "22,009",
-      user: "helloworld.reef",
-      actionPoints: "204,088",
-      referralPoints: "0",
-      total: "204,088",
-    },
-    {
-      rank: "22,010",
-      user: "benerichi.reef",
-      actionPoints: "203,977",
-      referralPoints: "0",
-      total: "203,977",
-    },
-    {
-      rank: "You",
-      user: "derek.reef",
-      actionPoints: "203,958",
-      referralPoints: "0",
-      total: "203,958",
-      isUser: true,
-    },
-    {
-      rank: "22,012",
-      user: "abdullah.reef",
-      actionPoints: "203,955",
-      referralPoints: "0",
-      total: "203,955",
-    },
-    {
-      rank: "22,013",
-      user: "5p9876...playmet",
-      actionPoints: "203,951",
-      referralPoints: "0",
-      total: "203,951",
-    },
-  ];
+export default function LeaderboardTable({ data = [] }) {
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
+  const totalPages = Math.ceil(data.length / pageSize);
+  const paginated = data.slice((page - 1) * pageSize, page * pageSize);
 
   return (
     <div className="">
       <div className="p-4">
         <h2 className="text-xl font-bold text-gray-900">Leaderboard</h2>
       </div>
-
-      <div className="overflow-x-auto rounded-lg shadow-sm ">
+      <div className="overflow-x-auto rounded-lg shadow-xl  p-2">
         <table className="w-full">
           <thead className=" bg-transparent">
             <tr>
@@ -93,67 +21,74 @@ export default function LeaderboardTable() {
               <th className="px-4 py-3 text-left text-sm font-semibold text-[#000000]">
                 User
               </th>
-              <th className="px-4 py-3 text-right text-sm font-semibold text-[#000000]">
+              <th className="px-4 py-3 text-left  text-sm font-semibold text-[#000000]">
                 Action Points
               </th>
-              <th className="px-4 py-3 text-right text-sm font-semibold text-[#000000]">
+              <th className="px-4 py-3 text-left  text-sm font-semibold text-[#000000]">
                 Referral Points
               </th>
-              <th className="px-4 py-3 text-right text-sm font-semibold text-[#000000]">
+              <th className="px-4 py-3 text-left  text-sm font-semibold text-[#000000]">
                 Total
               </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200 bg-[#F8F9FF] ">
-            {leaderboardData.map((row, index) => (
+            {paginated.map((row, index) => (
               <tr key={index}>
                 <td className="px-4 py-3 text-sm text-[##000000] font-semibold">
                   {row.rank}
                 </td>
-                <td className="px-4 py-3 text-sm text-gray-900">{row.user}</td>
-                <td className="px-4 py-3 text-sm text-gray-900 text-right">
-                  {row.actionPoints}
+                <td className="px-4 py-3 text-sm text-gray-900">
+                  {row.userAddress && row.userAddress.length > 10
+                    ? `${row.userAddress.slice(0, 6)}...${row.userAddress.slice(
+                        -4
+                      )}`
+                    : row.userAddress}
                 </td>
-                <td className="px-4 py-3 text-sm text-gray-900 text-right">
-                  {row.referralPoints}
+                <td className="px-4 py-3 text-sm text-gray-900  ">
+                  {Number(row.totalActionPoints).toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
                 </td>
-                <td className="px-4 py-3 text-sm text-gray-900 text-right font-medium">
-                  {row.total}
+                <td className="px-4 py-3 text-sm text-gray-900 font-medium">
+                  {Number(row.totalReferralPoints).toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
                 </td>
-              </tr>
-            ))}
-            <tr>
-              <td
-                colSpan="5"
-                className="px-4 py-2 bg-transparent text-center text-gray-500"
-              >
-                ...
-              </td>
-            </tr>
-            {bottomData.map((row, index) => (
-              <tr
-                key={`bottom-${index}`}
-                className={
-                  row.isUser ? "bg-blue-50 border-l-4 border-blue-400" : ""
-                }
-              >
-                <td className="px-4 py-3 text-sm text-[#000000] font-semibold">
-                  {row.rank}
-                </td>
-                <td className="px-4 py-3 text-sm text-gray-900">{row.user}</td>
-                <td className="px-4 py-3 text-sm text-gray-900 text-right">
-                  {row.actionPoints}
-                </td>
-                <td className="px-4 py-3 text-sm text-gray-900 text-right">
-                  {row.referralPoints}
-                </td>
-                <td className="px-4 py-3 text-sm text-gray-900 text-right font-medium">
-                  {row.total}
+                <td className="px-4 py-3 text-sm text-gray-900  font-medium">
+                  {Number(row.total).toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
+        {/* Pagination Controls - now inside the card/table div */}
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center gap-4 mt-4 shadow-lg rounded-lg bg-[#f8f9ff] py-3">
+            <button
+              className="px-3 py-1 sm:w-[8rem] w-[6rem] cursor-pointer rounded bg-gray-200 text-gray-700 font-medium disabled:opacity-50 shadow"
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+            >
+              Previous
+            </button>
+            <span className="text-sm text-gray-700">
+              Page {page} of {totalPages}
+            </span>
+            <button
+              className="px-3 py-1 rounded sm:w-[8rem] w-[6rem] cursor-pointer bg-gray-200 text-gray-700 font-medium disabled:opacity-50 shadow"
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
