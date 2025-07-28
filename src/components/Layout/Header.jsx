@@ -33,9 +33,9 @@ export default function Header() {
     setMobileMenuOpen(false);
   }, [location]);
 
-  // Prevent body scroll when mobile menu is open
+  // Prevent body scroll when mobile menu or settings popup is open
   useEffect(() => {
-    if (mobileMenuOpen) {
+    if (mobileMenuOpen || (isSettingsOpen && window.innerWidth >= 768)) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "unset";
@@ -44,7 +44,7 @@ export default function Header() {
     return () => {
       document.body.style.overflow = "unset";
     };
-  }, [mobileMenuOpen]);
+  }, [mobileMenuOpen, isSettingsOpen]);
 
   const toggleSettingsPopup = () => {
     setIsSettingsOpen(!isSettingsOpen);
