@@ -8,11 +8,13 @@ import { Link } from "react-router-dom";
 import { HiMenu, HiX } from "react-icons/hi";
 import { HiCog6Tooth } from "react-icons/hi2";
 import SettingsPopup from "../Popup/settingPopup";
-
+import { useAuth } from "../../contexts/AuthContext";
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const location = useLocation();
+  const { selectedAccount } = useAuth();
+  console.log("🚀 ~ selectedAccount:", selectedAccount);
 
   const toggleSettingsPopup = () => {
     console.log("clicked");
@@ -93,11 +95,19 @@ export default function Header() {
             <div className="flex items-center gap-2 pl-2 pr-4 py-2.5">
               <img src={ReefIcon} alt="" width={20} height={20} />
               <span className="text-[16px] font-extrabold bg-gradient-to-r from-[#A93185] to-[#5D3BAD] bg-clip-text text-transparent tracking-tight">
-                1151495 REEF
+                {selectedAccount && selectedAccount.balance
+                  ? `${selectedAccount.balance} REEF`
+                  : "1151495 REEF"}
               </span>
             </div>
             <div className="flex items-center bg-gradient-to-r from-[#A93185] to-[#5D3BAD] px-3 py-2.5 rounded-l-full rounded-r-full">
-              <span className="text-white text-[16px] font-medium">Anon 1</span>
+              <span className="text-white text-[16px] font-medium">
+                {selectedAccount &&
+                selectedAccount.meta &&
+                selectedAccount.meta.name
+                  ? selectedAccount.meta.name
+                  : "Anon 1"}
+              </span>
             </div>
           </div>
           <div className=" text-white py-3 px-4 rounded-2xl bg-gradient-to-br from-[#ae27a5] to-[#742cb2] shadow-[0_5px_20px_-10px_#742cb2]">
@@ -218,4 +228,5 @@ export default function Header() {
       <SettingsPopup isOpen={isSettingsOpen} onClose={toggleSettingsPopup} />
     </header>
   );
+  // ...existing code...
 }
