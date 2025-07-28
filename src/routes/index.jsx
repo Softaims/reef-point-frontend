@@ -11,6 +11,7 @@ export default function AppRoutes() {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/reef-wallet-connect" element={<ReefWalletConnect />} />
       <Route
         path="/dashboard"
         element={
