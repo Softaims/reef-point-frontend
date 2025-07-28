@@ -7,6 +7,7 @@ const initialState = {
   user: null,
   isAuthenticated: false,
   isLoading: true,
+  selectedAccount: null,
 };
 
 // Action types
@@ -15,6 +16,7 @@ const actionTypes = {
   LOGOUT: "LOGOUT",
   SET_LOADING: "SET_LOADING",
   SET_USER: "SET_USER",
+  SET_SELECTED_ACCOUNT: "SET_SELECTED_ACCOUNT",
 };
 
 // Reducer function
@@ -33,6 +35,7 @@ const authReducer = (state, action) => {
         user: null,
         isAuthenticated: false,
         isLoading: false,
+        selectedAccount: null,
       };
     case actionTypes.SET_LOADING:
       return {
@@ -46,6 +49,12 @@ const authReducer = (state, action) => {
         isAuthenticated: !!action.payload.user,
         isLoading: false,
       };
+    case actionTypes.SET_SELECTED_ACCOUNT:
+      return {
+        ...state,
+        selectedAccount: action.payload,
+      };
+
     default:
       return state;
   }
@@ -141,11 +150,19 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Account selection function
+  const setSelectedAccount = (account) => {
+    dispatch({
+      type: actionTypes.SET_SELECTED_ACCOUNT,
+      payload: account,
+    });
+  };
   const value = {
     ...state,
     login,
     logout,
     refreshToken,
+    setSelectedAccount,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
