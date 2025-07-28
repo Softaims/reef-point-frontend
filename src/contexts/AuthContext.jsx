@@ -2,12 +2,20 @@ import React, { createContext, useContext, useReducer, useEffect } from "react";
 import Cookies from "js-cookie";
 import apiService from "../api/apiService.js";
 
-// Initial state
+const initialSelectedAccount = (() => {
+  try {
+    const acc = localStorage.getItem("selectedAccount");
+    return acc ? JSON.parse(acc) : null;
+  } catch {
+    return null;
+  }
+})();
+
 const initialState = {
   user: null,
   isAuthenticated: false,
   isLoading: true,
-  selectedAccount: null,
+  selectedAccount: initialSelectedAccount,
 };
 
 // Action types
@@ -93,7 +101,16 @@ export const AuthProvider = ({ children }) => {
 
     initializeAuth();
   }, []);
-
+  useEffect(() => {
+    if (state.selectedAccount) {
+      localStorage.setItem(
+        "selectedAccount",
+        JSON.stringify(state.selectedAccount)
+      );
+    } else {
+      localStorage.removeItem("selectedAccount");
+    }
+  }, [state.selectedAccount]);
   // Login function
   const login = async (credentials) => {
     console.log("🚀 ~ login ~ credentials:", credentials);
