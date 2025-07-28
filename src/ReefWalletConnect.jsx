@@ -49,15 +49,20 @@ const ReefWalletConnect = () => {
     // Get the balance of the selected account
     const balance = await provider.api.query.system.account(account.address);
     const freeBalance = u8aToBn(balance.data.free.toU8a()).toString();
-
-    // Convert from smallest unit to REEF (18 decimal places)
-    // REEF has 18 decimal places, so divide by 10^18
     const freeBalanceREEF = (
       parseFloat(freeBalance) / Math.pow(10, 18)
     ).toFixed(4);
 
-    // Set the balance state
     setBalance(freeBalanceREEF);
+
+    // Get the EVM address
+    const evmAddress = await provider.api.query.evmAccounts.evmAddresses(
+      account.address
+    );
+    // evmAddress is a Bytes object, convert to hex string
+    const evmHex = evmAddress.toHex();
+    // You can now display or use evmHex as the EVM address
+    console.log("EVM Address:", evmHex);
   };
 
   return (
