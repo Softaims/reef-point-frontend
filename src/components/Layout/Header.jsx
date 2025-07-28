@@ -134,9 +134,9 @@ export default function Header() {
             </div>
 
             {/* Settings Icon with animation */}
-            <div className="w-10 h-10 flex items-center justify-center shadow-lg rounded-full bg-[#F4F1FC] transition-all duration-300 hover:shadow-xl hover:scale-110 hover:bg-[#E4DFF0]">
+            <div className="w-10 h-10 flex items-center cursor-pointer justify-center shadow-lg rounded-full bg-[#F4F1FC] transition-all duration-300 hover:shadow-xl hover:scale-110 hover:bg-[#E4DFF0]">
               <button
-                className="flex items-center justify-center text-[#A93185] hover:text-black transition-all duration-300 w-full h-full"
+                className="flex items-center justify-center cursor-pointer text-[#A93185] hover:text-black transition-all duration-300 w-full h-full"
                 onClick={toggleSettingsPopup}
               >
                 <Uik.Icon
