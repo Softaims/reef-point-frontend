@@ -5,18 +5,27 @@ import { useEffect, useState } from "react";
 import apiService from "../api/apiService";
 import UserStatsCard from "../components/Home/UserStatsCard";
 import ReferralCodeCard from "../components/Home/ReferralCodeCard";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function Home() {
   const [leaderboard, setLeaderboard] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { selectedAccount } = useAuth();
+  console.log("🚀 ~ Home ~ selectedAccount:", selectedAccount);
 
   useEffect(() => {
     const fetchLeaderboard = async () => {
       setLoading(true);
       setError(null);
       try {
-        const data = await apiService.getLeaderboardPoints();
+        // If selectedAccount exists, fetch leaderboard for that address
+        let data;
+        if (selectedAccount && selectedAccount.address) {
+          data = await apiService.getLeaderboardPoints(selectedAccount.address);
+        } else {
+          data = await apiService.getLeaderboardPoints();
+        }
         setLeaderboard(Array.isArray(data) ? data : data.data || []);
       } catch (err) {
         setError(err.message || "Failed to fetch leaderboard");
@@ -25,7 +34,7 @@ export default function Home() {
       }
     };
     fetchLeaderboard();
-  }, []);
+  }, [selectedAccount]);
 
   return (
     <>
