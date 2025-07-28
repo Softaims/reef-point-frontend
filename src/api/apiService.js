@@ -3,6 +3,7 @@ import axios from "./axiosInstance.js";
 import Cookies from "js-cookie";
 
 const apiService = {
+  // Admin specific routes
   // Admin login
   Signin: async (payload) => {
     console.log("🚀 ~ Signin: ~ payload:", payload);
@@ -65,6 +66,20 @@ const apiService = {
       return response.data;
     } catch (error) {
       throw error.response?.data || { message: "Failed to update campaign" };
+    }
+  },
+
+  // Get daily leaderboard points
+  getLeaderboardPoints: async () => {
+    try {
+      const response = await axios.get("points/daily-total-points");
+      return response.data;
+    } catch (error) {
+      throw (
+        error.response?.data || {
+          message: "Failed to fetch leaderboard points",
+        }
+      );
     }
   },
   // Refresh token
