@@ -3,8 +3,7 @@ import axios from "./axiosInstance.js";
 import Cookies from "js-cookie";
 
 const apiService = {
-  // Admin specific routes
-  // Admin login
+  // admin routes
   Signin: async (payload) => {
     console.log("🚀 ~ Signin: ~ payload:", payload);
     try {
@@ -69,19 +68,6 @@ const apiService = {
     }
   },
 
-  // Get daily leaderboard points
-  getLeaderboardPoints: async () => {
-    try {
-      const response = await axios.get("points/daily-total-points");
-      return response.data;
-    } catch (error) {
-      throw (
-        error.response?.data || {
-          message: "Failed to fetch leaderboard points",
-        }
-      );
-    }
-  },
   // Refresh token
   refreshToken: async (payload) => {
     try {
@@ -107,6 +93,74 @@ const apiService = {
       return response.data;
     } catch (error) {
       throw error.response?.data || { message: "Failed to delete campaign" };
+    }
+  },
+
+  // user routes
+
+  connectWallet: async (address) => {
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_BASE_URL}/users/connect-wallet`,
+        { address }
+      );
+      return response.data;
+    } catch (error) {
+      throw (
+        error.response?.data || {
+          message: "Failed to connect wallet",
+        }
+      );
+    }
+  },
+
+  // Get daily leaderboard points
+
+  getLeaderboardPoints: async () => {
+    try {
+      const response = await axios.get("points/daily-total-points");
+      return response.data;
+    } catch (error) {
+      throw (
+        error.response?.data || {
+          message: "Failed to fetch leaderboard points",
+        }
+      );
+    }
+  },
+  // Leaderboard for user (with EVM address)
+  getUserLeaderboardPoints: async (address) => {
+    try {
+      const response = await axios.get(
+        `${
+          import.meta.env.VITE_API_BASE_URL
+        }/points/daily-total-points/${address}`
+      );
+      return response.data;
+    } catch (error) {
+      throw (
+        error.response?.data || {
+          message: "Failed to fetch user leaderboard points",
+        }
+      );
+    }
+  },
+
+  // Weekly stats for a user
+  getUserWeeklyStats: async (address) => {
+    try {
+      const response = await axios.get(
+        `${
+          import.meta.env.VITE_API_BASE_URL
+        }/points/user-stats?userAddress=${address}`
+      );
+      return response.data;
+    } catch (error) {
+      throw (
+        error.response?.data || {
+          message: "Failed to fetch weekly stats",
+        }
+      );
     }
   },
 };
