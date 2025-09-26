@@ -168,12 +168,32 @@ export const AuthProvider = ({ children }) => {
   };
 
   // Account selection function
-  const setSelectedAccount = (account) => {
-    dispatch({
-      type: actionTypes.SET_SELECTED_ACCOUNT,
-      payload: account,
-    });
+  const setSelectedAccount = async (account) => {
+    console.log("🚀 ~ setSelectedAccount ~ account:", account?.evmAddress);
+    try {
+      // First update the local state
+      dispatch({
+        type: actionTypes.SET_SELECTED_ACCOUNT,
+        payload: account,
+      });
+
+      if (account) {
+        await apiService.connectWallet(account?.evmAddress);
+        console.log("Account saved to database successfully");
+      }
+    } catch (error) {
+      console.error("Failed to save account to database:", error);
+      // Optionally, you might want to revert the local state change if the API call fails
+      // dispatch({
+      //   type: actionTypes.SET_SELECTED_ACCOUNT,
+      //   payload: state.selectedAccount, // revert to previous state
+      // });
+
+      // Re-throw the error so the calling component can handle it
+      throw error;
+    }
   };
+
   const value = {
     ...state,
     login,
