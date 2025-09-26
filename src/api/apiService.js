@@ -163,6 +163,22 @@ const apiService = {
       );
     }
   },
+  // Referral info for a user
+  getReferralInfo: async (address) => {
+    try {
+      const response = await axios.get(
+        `${
+          import.meta.env.VITE_API_BASE_URL
+        }/referrals/user-referral-info/0x641e34931C03751BFED14C4087bA395303bEd1A5`
+      );
+      return response.data;
+    } catch (error) {
+      throw (
+        error.response?.data || {
+          message: "Failed to fetch referral info",
+        }
+      );
+    }
+  },
 };
-
 export default apiService;
