@@ -33,38 +33,75 @@ export default function LeaderboardTable({ data = [] }) {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200 bg-[#F8F9FF] ">
-            {paginated.map((row, index) => (
-              <tr key={index}>
-                <td className="px-4 py-3 text-sm text-[##000000] font-semibold">
-                  {row.rank}
-                </td>
-                <td className="px-4 py-3 text-sm text-gray-900">
-                  {row.userAddress && row.userAddress.length > 10
-                    ? `${row.userAddress.slice(0, 6)}...${row.userAddress.slice(
-                        -4
-                      )}`
-                    : row.userAddress}
-                </td>
-                <td className="px-4 py-3 text-sm text-gray-900  ">
-                  {Number(row.totalActionPoints).toLocaleString(undefined, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
-                </td>
-                <td className="px-4 py-3 text-sm text-gray-900 font-medium">
-                  {Number(row.totalReferralPoints).toLocaleString(undefined, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
-                </td>
-                <td className="px-4 py-3 text-sm text-gray-900  font-medium">
-                  {Number(row.total).toLocaleString(undefined, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
-                </td>
-              </tr>
-            ))}
+            {paginated.map((row, index) => {
+              // Handle separator row
+              if (row.isSeparator) {
+                return (
+                  <tr key={`separator-${index}`}>
+                    <td
+                      colSpan="5"
+                      className="px-4 py-2 text-center text-sm text-gray-500"
+                    >
+                      <div className="flex items-center justify-center">
+                        <div className="flex-1 border-t border-gray-300"></div>
+                        <span className="px-3 text-xs">...</span>
+                        <div className="flex-1 border-t border-gray-300"></div>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              }
+
+              // Determine if this is the current user row
+              const isCurrentUser = row.rank === "You";
+              const rowBgClass = isCurrentUser
+                ? "bg-blue-50 border-2 border-blue-200"
+                : "";
+
+              return (
+                <tr key={index} className={rowBgClass}>
+                  <td className="px-4 py-3 text-sm text-[##000000] font-semibold">
+                    {row.rank === "You" ? (
+                      <span className="bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold">
+                        You
+                      </span>
+                    ) : (
+                      row.rank
+                    )}
+                  </td>
+                  <td className="px-4 py-3 text-sm text-gray-900">
+                    {row.userAddress && row.userAddress.length > 10
+                      ? `${row.userAddress.slice(
+                          0,
+                          6
+                        )}...${row.userAddress.slice(-4)}`
+                      : row.userAddress}
+                  </td>
+                  <td className="px-4 py-3 text-sm text-gray-900  ">
+                    {Number(
+                      row.totalActionPoints || row.actionPoints || 0
+                    ).toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </td>
+                  <td className="px-4 py-3 text-sm text-gray-900 font-medium">
+                    {Number(
+                      row.totalReferralPoints || row.referralPoints || 0
+                    ).toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </td>
+                  <td className="px-4 py-3 text-sm text-gray-900  font-medium">
+                    {Number(row.total).toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
         {/* Pagination Controls - now inside the card/table div */}

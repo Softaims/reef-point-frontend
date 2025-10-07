@@ -134,7 +134,7 @@ const apiService = {
       const response = await axios.get(
         `${
           import.meta.env.VITE_API_BASE_URL
-        }/points/daily-total-points/${address}`
+        }/points/leaderboard?userAddress=${address}`
       );
       return response.data;
     } catch (error) {
@@ -169,7 +169,7 @@ const apiService = {
       const response = await axios.get(
         `${
           import.meta.env.VITE_API_BASE_URL
-        }/referrals/user-referral-info/0x641e34931C03751BFED14C4087bA395303bEd1A5`
+        }/referrals/user-referral-info/${address}`
       );
       return response.data;
     } catch (error) {

@@ -16,7 +16,6 @@ const CampaignsPage = () => {
   const [campaigns, setCampaigns] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [fetchError, setFetchError] = useState(null);
-  // Fetch campaigns from backend on mount
   useEffect(() => {
     const fetchCampaigns = async () => {
       setIsLoading(true);
@@ -47,7 +46,6 @@ const CampaignsPage = () => {
   // Add or update campaign
   const handleSaveCampaign = (campaign) => {
     if (editingCampaign) {
-      // Update existing
       setCampaigns((prev) =>
         prev.map((c) =>
           c.id === editingCampaign.id ? { ...c, ...campaign } : c
@@ -61,13 +59,11 @@ const CampaignsPage = () => {
     setIsCreateModalOpen(false);
   };
 
-  // Open modal for create
   const handleCreateCampaign = () => {
     setEditingCampaign(null);
     setIsCreateModalOpen(true);
   };
 
-  // Open modal for edit
   const handleEditCampaign = (campaign) => {
     setEditingCampaign(campaign);
     setIsCreateModalOpen(true);
@@ -77,11 +73,16 @@ const CampaignsPage = () => {
     setIsCreateModalOpen(false);
     setEditingCampaign(null);
   };
-  // Delete modal handlers
   const handleDeleteCampaign = (campaignId) => {
     setCampaigns((prev) =>
       prev.filter((campaign) => campaign.id !== campaignId)
     );
+    console.log("Deleted campaign with ID:", campaignId);
+    // call the api service to delete from backend
+    apiService.deleteCampaign(campaignId).catch((err) => {
+      console.error("Failed to delete campaign:", err);
+    });
+    handleCloseDeleteModal();
   };
   const handleOpenDeleteModal = (campaign) => {
     setCampaignToDelete(campaign);
@@ -158,8 +159,6 @@ const CampaignsPage = () => {
           />
         )}
       </main>
-
-      {/* Mobile Menu Overlay */}
 
       {/* Create Campaign Modal */}
       <CreateCampaignModal

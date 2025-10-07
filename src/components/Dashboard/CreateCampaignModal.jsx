@@ -189,7 +189,6 @@ const CreateCampaignModal = ({
   initialData,
   isEdit,
 }) => {
-  console.log("🚀 ~ CreateCampaignModal ~ initialData:", initialData);
   const [formData, setFormData] = useState({
     totalPools: "",
     isBootstrapping: false,
@@ -263,7 +262,6 @@ const CreateCampaignModal = ({
 
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    // Clear error when user starts typing
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
@@ -287,7 +285,6 @@ const CreateCampaignModal = ({
     e.preventDefault();
     setIsLoading(true);
 
-    // Required field validation before zod
     const requiredErrors = {};
     if (!formData.totalPools || isNaN(Number(formData.totalPools)))
       requiredErrors.totalPools = "Total pools is required";
@@ -341,6 +338,8 @@ const CreateCampaignModal = ({
         memeSznStartDate: toISO(formData.memeSznStartDate),
       };
 
+      console.log("🚀 ~ handleSubmit ~ isEdit:", isEdit);
+      console.log("🚀 ~ handleSubmit ~ initialData:", initialData);
       if (isEdit && initialData?.id) {
         payload.id = initialData.id;
         await apiService.updateCampaign(payload);

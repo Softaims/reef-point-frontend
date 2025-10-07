@@ -104,47 +104,55 @@ export default function Header() {
                 </Link>
               ))}
             </nav>
-
             {/* REEF Badge with enhanced animation */}
-            <div className="flex w-fit overflow-hidden bg-gradient-to-br from-[#F4F1FC] to-[#F7F6FC] shadow-lg rounded-full transform transition-all duration-300 hover:scale-105 hover:shadow-xl">
-              <div className="flex items-center gap-2 pl-3 pr-4 py-2.5">
-                <img
-                  src={ReefIcon}
-                  alt=""
-                  width={20}
-                  height={20}
-                  className="animate-pulse"
-                />
-                <span className="text-[16px] font-extrabold bg-gradient-to-r from-[#A93185] to-[#5D3BAD] bg-clip-text text-transparent tracking-tight">
-                  {selectedAccount?.balance
-                    ? `${selectedAccount.balance} REEF`
-                    : "1151495 REEF"}
-                </span>
+            {selectedAccount && (
+              <div className="flex w-fit overflow-hidden bg-gradient-to-br from-[#F4F1FC] to-[#F7F6FC] shadow-lg rounded-full transform transition-all duration-300 hover:scale-105 hover:shadow-xl">
+                <div className="flex items-center gap-2 pl-3 pr-4 py-2.5">
+                  <img
+                    src={ReefIcon}
+                    alt=""
+                    width={20}
+                    height={20}
+                    className="animate-pulse"
+                  />
+                  <span className="text-[16px] font-extrabold bg-gradient-to-r from-[#A93185] to-[#5D3BAD] bg-clip-text text-transparent tracking-tight">
+                    {selectedAccount?.balance
+                      ? `${selectedAccount.balance} REEF`
+                      : "1151495 REEF"}
+                  </span>
+                </div>
+                <div className="flex items-center bg-gradient-to-r from-[#A93185] to-[#5D3BAD] px-4 py-2.5 rounded-full">
+                  <span className="text-white text-[16px] font-medium">
+                    {selectedAccount?.meta?.name || "Anon 1"}
+                  </span>
+                </div>
               </div>
-              <div className="flex items-center bg-gradient-to-r from-[#A93185] to-[#5D3BAD] px-4 py-2.5 rounded-full">
-                <span className="text-white text-[16px] font-medium">
-                  {selectedAccount?.meta?.name || "Anon 1"}
-                </span>
+            )}
+            {/* Connect Button with animation  */}
+            {!selectedAccount && (
+              <div className="text-white py-3 px-6 rounded-2xl bg-gradient-to-br from-[#ae27a5] to-[#742cb2] shadow-[0_5px_20px_-10px_#742cb2] transition-all duration-300 hover:shadow-[0_8px_25px_-10px_#742cb2] hover:scale-105">
+                <button
+                  className="font-medium cursor-pointer"
+                  onClick={toggleSettingsPopup}
+                >
+                  Connect
+                </button>
               </div>
-            </div>
-
-            {/* Connect Button with animation */}
-            <div className="text-white py-3 px-6 rounded-2xl bg-gradient-to-br from-[#ae27a5] to-[#742cb2] shadow-[0_5px_20px_-10px_#742cb2] transition-all duration-300 hover:shadow-[0_8px_25px_-10px_#742cb2] hover:scale-105">
-              <button className="font-medium cursor-pointer">Connect</button>
-            </div>
-
+            )}
             {/* Settings Icon with animation */}
-            <div className="w-10 h-10 flex items-center cursor-pointer justify-center shadow-lg rounded-full bg-[#F4F1FC] transition-all duration-300 hover:shadow-xl hover:scale-110 hover:bg-[#E4DFF0]">
-              <button
-                className="flex items-center justify-center cursor-pointer text-[#A93185] hover:text-black transition-all duration-300 w-full h-full"
-                onClick={toggleSettingsPopup}
-              >
-                <Uik.Icon
-                  icon={faCog}
-                  className="w-5 h-5 transition-transform duration-300 hover:rotate-90"
-                />
-              </button>
-            </div>
+            {selectedAccount && (
+              <div className="w-10 h-10 flex items-center cursor-pointer justify-center shadow-lg rounded-full bg-[#F4F1FC] transition-all duration-300 hover:shadow-xl hover:scale-110 hover:bg-[#E4DFF0]">
+                <button
+                  className="flex items-center justify-center cursor-pointer text-[#A93185] hover:text-black transition-all duration-300 w-full h-full"
+                  onClick={toggleSettingsPopup}
+                >
+                  <Uik.Icon
+                    icon={faCog}
+                    className="w-5 h-5 transition-transform duration-300 hover:rotate-90"
+                  />
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Mobile Right Section */}
