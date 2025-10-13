@@ -49,9 +49,12 @@ const apiService = {
   },
 
   // Get all campaigns
-  getCampaigns: async () => {
+  // Get all campaigns with pagination
+  getCampaigns: async (page = 1, limit = 20) => {
     try {
-      const response = await axios.get("/settings");
+      const response = await axios.get(
+        `/campaigns/pools?page=${page}&limit=${limit}`
+      );
       return response.data;
     } catch (error) {
       console.log("🚀 ~ getCampaigns: ~ error:", error.response?.data || error);

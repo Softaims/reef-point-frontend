@@ -2,96 +2,56 @@ import { useState, useEffect } from "react";
 import Sidebar from "../components/Dashboard/Sidebar";
 import Navbar from "../components/Dashboard/Navbar";
 import CampaignTable from "../components/Dashboard/CampaignTable";
-// import { mockCampaigns } from "../data/mockCampaigns";
 import apiService from "../api/apiService";
-import { Plus, Filter, Download } from "lucide-react";
-import CreateCampaignModal from "../components/Dashboard/CreateCampaignModal";
-import DeleteCampaignModal from "../components/Dashboard/DeleteCampaignModal";
-import Uik from "@reef-chain/ui-kit";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const CampaignsPage = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [editingCampaign, setEditingCampaign] = useState(null);
   const [campaigns, setCampaigns] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [fetchError, setFetchError] = useState(null);
-  useEffect(() => {
-    const fetchCampaigns = async () => {
-      setIsLoading(true);
-      setFetchError(null);
-      try {
-        const response = await apiService.getCampaigns();
-        console.log("🚀 ~ fetchCampaigns ~ response:", response);
-        // Support array, {data: array}, or single object
-        let data = [];
-        if (Array.isArray(response)) {
-          data = response;
-        } else if (response && Array.isArray(response.data)) {
-          data = response.data;
-        } else if (response && typeof response === "object") {
-          data = [response];
-        }
-        setCampaigns(data);
-      } catch (err) {
-        setFetchError(err.message || "Failed to fetch campaigns");
-      } finally {
-        setIsLoading(false);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 20,
+    totalCount: 0,
+    totalPages: 0,
+    hasNext: false,
+    hasPrev: false,
+  });
+
+  const fetchCampaigns = async (page = 1) => {
+    setIsLoading(true);
+    setFetchError(null);
+    try {
+      const response = await apiService.getCampaigns(page, pagination.limit);
+      console.log("🚀 ~ fetchCampaigns ~ response:", response);
+
+      if (response && response.data) {
+        setCampaigns(response.data);
+        setPagination({
+          page: parseInt(response.pagination.page),
+          limit: parseInt(response.pagination.limit),
+          totalCount: response.pagination.totalCount,
+          totalPages: response.pagination.totalPages,
+          hasNext: response.pagination.hasNext,
+          hasPrev: response.pagination.hasPrev,
+        });
       }
-    };
+    } catch (err) {
+      setFetchError(err.message || "Failed to fetch campaigns");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchCampaigns();
   }, []);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [campaignToDelete, setCampaignToDelete] = useState(null);
-  // Add or update campaign
-  const handleSaveCampaign = (campaign) => {
-    if (editingCampaign) {
-      setCampaigns((prev) =>
-        prev.map((c) =>
-          c.id === editingCampaign.id ? { ...c, ...campaign } : c
-        )
-      );
-    } else {
-      // Add new
-      setCampaigns((prev) => [{ ...campaign, id: Date.now() }, ...prev]);
+
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= pagination.totalPages) {
+      fetchCampaigns(newPage);
     }
-    setEditingCampaign(null);
-    setIsCreateModalOpen(false);
-  };
-
-  const handleCreateCampaign = () => {
-    setEditingCampaign(null);
-    setIsCreateModalOpen(true);
-  };
-
-  const handleEditCampaign = (campaign) => {
-    setEditingCampaign(campaign);
-    setIsCreateModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsCreateModalOpen(false);
-    setEditingCampaign(null);
-  };
-  const handleDeleteCampaign = (campaignId) => {
-    setCampaigns((prev) =>
-      prev.filter((campaign) => campaign.id !== campaignId)
-    );
-    console.log("Deleted campaign with ID:", campaignId);
-    // call the api service to delete from backend
-    apiService.deleteCampaign(campaignId).catch((err) => {
-      console.error("Failed to delete campaign:", err);
-    });
-    handleCloseDeleteModal();
-  };
-  const handleOpenDeleteModal = (campaign) => {
-    setCampaignToDelete(campaign);
-    setIsDeleteModalOpen(true);
-  };
-
-  const handleCloseDeleteModal = () => {
-    setIsDeleteModalOpen(false);
-    setCampaignToDelete(null);
   };
 
   return (
@@ -102,7 +62,7 @@ const CampaignsPage = () => {
       />
       <Navbar setIsMobileMenuOpen={setIsMobileMenuOpen} />
 
-      <main className="lg:ml-64 sm:pt-[7rem] pt-[11rem] p-4 ">
+      <main className="lg:ml-64 sm:pt-[7rem] pt-[11rem] p-4">
         <div className="mb-6 lg:mb-8">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div>
@@ -110,38 +70,13 @@ const CampaignsPage = () => {
                 All Campaigns
               </h1>
               <p className="text-gray-600 mt-1 text-sm lg:text-base">
-                Manage all your marketing campaigns
+                Manage all your marketing campaigns ({pagination.totalCount}{" "}
+                total pools)
               </p>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex justify-center lg:justify-end">
-              <div
-                className="relative w-full sm:w-[12rem] h-[3rem] rounded-2xl overflow-hidden"
-                style={{
-                  background:
-                    "linear-gradient(90deg, #742cb2 0%, #ae27a5 100%)",
-                }}
-              >
-                {/* Bubble effect background - positioned to fill button */}
-                <div className="absolute inset-0 w-full h-full z-10 pointer-events-none">
-                  <Uik.Bubbles />
-                </div>
-
-                {/* Button content */}
-                <button
-                  onClick={handleCreateCampaign}
-                  className="relative z-20 text-white w-full h-full rounded-2xl shadow-[0_5px_20px_-10px_#742cb2] font-medium transition-all duration-200 transform hover:scale-105 flex items-center justify-center space-x-2 text-sm lg:text-base cursor-pointer bg-transparent border-none hover:shadow-[0_8px_30px_-12px_#742cb2]"
-                >
-                  <Plus className="w-4 lg:w-5 h-4 lg:h-5" />
-                  <span>Create Campaign</span>
-                </button>
-              </div>
             </div>
           </div>
         </div>
 
-        {/* <CampaignTable campaigns={mockCampaigns} /> */}
         {isLoading ? (
           <div className="flex justify-center items-center py-12">
             <div className="w-8 h-8 border-2 border-purple-400 border-t-transparent rounded-full animate-spin"></div>
@@ -152,28 +87,105 @@ const CampaignsPage = () => {
         ) : fetchError ? (
           <div className="text-center text-red-500 py-8">{fetchError}</div>
         ) : (
-          <CampaignTable
-            campaigns={campaigns}
-            onDeleteCampaign={handleOpenDeleteModal}
-            onEditCampaign={handleEditCampaign}
-          />
+          <>
+            <CampaignTable campaigns={campaigns} />
+
+            {/* Pagination Controls */}
+            {pagination.totalPages > 1 && (
+              <div className="mt-6 flex items-center justify-between bg-white rounded-lg shadow-sm border border-gray-200 px-4 py-3">
+                <div className="flex-1 flex justify-between sm:hidden">
+                  <button
+                    onClick={() => handlePageChange(pagination.page - 1)}
+                    disabled={!pagination.hasPrev}
+                    className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Previous
+                  </button>
+                  <button
+                    onClick={() => handlePageChange(pagination.page + 1)}
+                    disabled={!pagination.hasNext}
+                    className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Next
+                  </button>
+                </div>
+                <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                  <div>
+                    <p className="text-sm text-gray-700">
+                      Showing page{" "}
+                      <span className="font-medium">{pagination.page}</span> of{" "}
+                      <span className="font-medium">
+                        {pagination.totalPages}
+                      </span>{" "}
+                      ({pagination.totalCount} total pools)
+                    </p>
+                  </div>
+                  <div>
+                    <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+                      <button
+                        onClick={() => handlePageChange(pagination.page - 1)}
+                        disabled={!pagination.hasPrev}
+                        className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <ChevronLeft className="h-5 w-5" />
+                      </button>
+
+                      {/* Page Numbers */}
+                      {Array.from(
+                        { length: pagination.totalPages },
+                        (_, i) => i + 1
+                      ).map((page) => {
+                        // Show first page, last page, current page, and pages around current
+                        if (
+                          page === 1 ||
+                          page === pagination.totalPages ||
+                          (page >= pagination.page - 1 &&
+                            page <= pagination.page + 1)
+                        ) {
+                          return (
+                            <button
+                              key={page}
+                              onClick={() => handlePageChange(page)}
+                              className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
+                                page === pagination.page
+                                  ? "z-10 bg-purple-50 border-purple-500 text-purple-600"
+                                  : "bg-white border-gray-300 text-gray-500 hover:bg-gray-50"
+                              }`}
+                            >
+                              {page}
+                            </button>
+                          );
+                        } else if (
+                          page === pagination.page - 2 ||
+                          page === pagination.page + 2
+                        ) {
+                          return (
+                            <span
+                              key={page}
+                              className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700"
+                            >
+                              ...
+                            </span>
+                          );
+                        }
+                        return null;
+                      })}
+
+                      <button
+                        onClick={() => handlePageChange(pagination.page + 1)}
+                        disabled={!pagination.hasNext}
+                        className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <ChevronRight className="h-5 w-5" />
+                      </button>
+                    </nav>
+                  </div>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </main>
-
-      {/* Create Campaign Modal */}
-      <CreateCampaignModal
-        isOpen={isCreateModalOpen}
-        onClose={handleCloseModal}
-        onCreate={handleSaveCampaign}
-        initialData={editingCampaign}
-        isEdit={!!editingCampaign}
-      />
-      <DeleteCampaignModal
-        isOpen={isDeleteModalOpen}
-        onClose={handleCloseDeleteModal}
-        onDelete={handleDeleteCampaign}
-        campaign={campaignToDelete}
-      />
     </div>
   );
 };
