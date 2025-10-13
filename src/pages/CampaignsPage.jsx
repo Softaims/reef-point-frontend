@@ -3,7 +3,6 @@ import Sidebar from "../components/Dashboard/Sidebar";
 import Navbar from "../components/Dashboard/Navbar";
 import CampaignTable from "../components/Dashboard/CampaignTable";
 import apiService from "../api/apiService";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const CampaignsPage = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -12,18 +11,24 @@ const CampaignsPage = () => {
   const [fetchError, setFetchError] = useState(null);
   const [pagination, setPagination] = useState({
     page: 1,
-    limit: 20,
+    limit: 10,
     totalCount: 0,
     totalPages: 0,
     hasNext: false,
     hasPrev: false,
   });
 
-  const fetchCampaigns = async (page = 1) => {
-    setIsLoading(true);
+  const fetchCampaigns = async (
+    page = 1,
+    limit = pagination.limit,
+    isInitialLoad = false
+  ) => {
+    if (isInitialLoad) {
+      setIsLoading(true);
+    }
     setFetchError(null);
     try {
-      const response = await apiService.getCampaigns(page, pagination.limit);
+      const response = await apiService.getCampaigns(page, limit);
       console.log("🚀 ~ fetchCampaigns ~ response:", response);
 
       if (response && response.data) {
@@ -40,17 +45,32 @@ const CampaignsPage = () => {
     } catch (err) {
       setFetchError(err.message || "Failed to fetch campaigns");
     } finally {
-      setIsLoading(false);
+      if (isInitialLoad) {
+        setIsLoading(false);
+      }
     }
   };
 
   useEffect(() => {
-    fetchCampaigns();
+    fetchCampaigns(1, pagination.limit, true); // Initial load
   }, []);
 
   const handlePageChange = (newPage) => {
-    if (newPage >= 1 && newPage <= pagination.totalPages) {
-      fetchCampaigns(newPage);
+    if (
+      newPage >= 1 &&
+      newPage <= pagination.totalPages &&
+      newPage !== pagination.page
+    ) {
+      fetchCampaigns(newPage, pagination.limit, false); // Page change, not initial load
+    }
+  };
+
+  const handleItemsPerPageChange = (newLimit) => {
+    if (newLimit !== pagination.limit) {
+      const newPagination = { ...pagination, limit: newLimit };
+      setPagination(newPagination);
+      // Reset to page 1 when changing page size
+      fetchCampaigns(1, newLimit, false); // Page size change, not initial load
     }
   };
 
@@ -87,103 +107,19 @@ const CampaignsPage = () => {
         ) : fetchError ? (
           <div className="text-center text-red-500 py-8">{fetchError}</div>
         ) : (
-          <>
-            <CampaignTable campaigns={campaigns} />
-
-            {/* Pagination Controls */}
-            {pagination.totalPages > 1 && (
-              <div className="mt-6 flex items-center justify-between bg-white rounded-lg shadow-sm border border-gray-200 px-4 py-3">
-                <div className="flex-1 flex justify-between sm:hidden">
-                  <button
-                    onClick={() => handlePageChange(pagination.page - 1)}
-                    disabled={!pagination.hasPrev}
-                    className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Previous
-                  </button>
-                  <button
-                    onClick={() => handlePageChange(pagination.page + 1)}
-                    disabled={!pagination.hasNext}
-                    className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Next
-                  </button>
-                </div>
-                <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-                  <div>
-                    <p className="text-sm text-gray-700">
-                      Showing page{" "}
-                      <span className="font-medium">{pagination.page}</span> of{" "}
-                      <span className="font-medium">
-                        {pagination.totalPages}
-                      </span>{" "}
-                      ({pagination.totalCount} total pools)
-                    </p>
-                  </div>
-                  <div>
-                    <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
-                      <button
-                        onClick={() => handlePageChange(pagination.page - 1)}
-                        disabled={!pagination.hasPrev}
-                        className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        <ChevronLeft className="h-5 w-5" />
-                      </button>
-
-                      {/* Page Numbers */}
-                      {Array.from(
-                        { length: pagination.totalPages },
-                        (_, i) => i + 1
-                      ).map((page) => {
-                        // Show first page, last page, current page, and pages around current
-                        if (
-                          page === 1 ||
-                          page === pagination.totalPages ||
-                          (page >= pagination.page - 1 &&
-                            page <= pagination.page + 1)
-                        ) {
-                          return (
-                            <button
-                              key={page}
-                              onClick={() => handlePageChange(page)}
-                              className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
-                                page === pagination.page
-                                  ? "z-10 bg-purple-50 border-purple-500 text-purple-600"
-                                  : "bg-white border-gray-300 text-gray-500 hover:bg-gray-50"
-                              }`}
-                            >
-                              {page}
-                            </button>
-                          );
-                        } else if (
-                          page === pagination.page - 2 ||
-                          page === pagination.page + 2
-                        ) {
-                          return (
-                            <span
-                              key={page}
-                              className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700"
-                            >
-                              ...
-                            </span>
-                          );
-                        }
-                        return null;
-                      })}
-
-                      <button
-                        onClick={() => handlePageChange(pagination.page + 1)}
-                        disabled={!pagination.hasNext}
-                        className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        <ChevronRight className="h-5 w-5" />
-                      </button>
-                    </nav>
-                  </div>
-                </div>
-              </div>
-            )}
-          </>
+          <CampaignTable
+            campaigns={campaigns}
+            // Pagination props
+            currentPage={pagination.page}
+            totalPages={pagination.totalPages}
+            totalItems={pagination.totalCount}
+            itemsPerPage={pagination.limit}
+            onPageChange={handlePageChange}
+            onItemsPerPageChange={handleItemsPerPageChange}
+            showPageSizeSelector={true}
+            showJumpToPage={true}
+            pageSizeOptions={[10, 20, 50, 100]}
+          />
         )}
       </main>
     </div>

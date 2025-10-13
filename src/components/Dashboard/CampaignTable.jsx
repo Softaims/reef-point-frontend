@@ -1,6 +1,21 @@
 import { Edit, Trash2, Calendar } from "lucide-react";
+import Pagination from "../common/Pagination";
 
-const CampaignTable = ({ campaigns, onDeleteCampaign, onEditCampaign }) => {
+const CampaignTable = ({
+  campaigns,
+  onDeleteCampaign,
+  onEditCampaign,
+  // Pagination props
+  currentPage,
+  totalPages,
+  totalItems,
+  itemsPerPage,
+  onPageChange,
+  onItemsPerPageChange,
+  showPageSizeSelector = true,
+  showJumpToPage = true,
+  pageSizeOptions = [10, 20, 50, 100],
+}) => {
   const getStatusBadge = (isEligible, label) => {
     return (
       <span
@@ -38,10 +53,22 @@ const CampaignTable = ({ campaigns, onDeleteCampaign, onEditCampaign }) => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      {/* Table Header with gradient */}
+      <div className="bg-gradient-to-r from-purple-50 to-pink-50 px-6 py-4 border-b border-gray-200">
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-semibold text-gray-900">
+            Campaign Pools
+          </h3>
+          <div className="text-sm text-gray-600">
+            {campaigns.length} pool{campaigns.length !== 1 ? "s" : ""} shown
+          </div>
+        </div>
+      </div>
+
       <div className="overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-gray-50 border-b border-gray-200">
+          <thead className="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Pool Info
@@ -69,7 +96,7 @@ const CampaignTable = ({ campaigns, onDeleteCampaign, onEditCampaign }) => {
             {campaigns.map((campaign) => (
               <tr
                 key={campaign.poolAddress}
-                className="hover:bg-gray-50 transition-colors"
+                className="hover:bg-gradient-to-r hover:from-purple-50/50 hover:to-pink-50/50 transition-all duration-300 border-b border-gray-100 last:border-b-0"
               >
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
@@ -176,6 +203,51 @@ const CampaignTable = ({ campaigns, onDeleteCampaign, onEditCampaign }) => {
           </tbody>
         </table>
       </div>
+
+      {/* Empty state when no campaigns */}
+      {campaigns.length === 0 && (
+        <div className="text-center py-12">
+          <div className="text-gray-400 mb-3">
+            <svg
+              className="mx-auto h-12 w-12"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1}
+                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2M4 13h2m13-8l-4 4m0 0l-4-4m4 4V3"
+              />
+            </svg>
+          </div>
+          <h3 className="text-sm font-medium text-gray-900 mb-1">
+            No campaigns found
+          </h3>
+          <p className="text-sm text-gray-500">
+            There are no campaigns to display at the moment.
+          </p>
+        </div>
+      )}
+
+      {/* Integrated Pagination - only show if we have pagination data */}
+      {totalPages > 1 && (
+        <div className="border-t border-gray-200">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            itemsPerPage={itemsPerPage}
+            onPageChange={onPageChange}
+            onItemsPerPageChange={onItemsPerPageChange}
+            showPageSizeSelector={showPageSizeSelector}
+            showJumpToPage={showJumpToPage}
+            pageSizeOptions={pageSizeOptions}
+            className="border-0 rounded-none rounded-b-xl"
+          />
+        </div>
+      )}
     </div>
   );
 };
