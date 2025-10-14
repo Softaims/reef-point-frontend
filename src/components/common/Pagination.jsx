@@ -161,50 +161,14 @@ const Pagination = ({
         {/* Right Section - Pagination controls */}
         <div className="flex items-center space-x-4">
           {/* Jump to page */}
-          {showJumpToPage && (
-            <div className="flex items-center space-x-2">
-              {!showJumpInput ? (
-                <button
-                  onClick={() => setShowJumpInput(true)}
-                  className="text-sm text-gray-600 hover:text-purple-600 transition-colors duration-200"
-                >
-                  Go to page
-                </button>
-              ) : (
-                <div className="flex items-center space-x-1">
-                  <span className="text-sm text-gray-600">Go to:</span>
-                  <input
-                    type="number"
-                    min="1"
-                    max={totalPages}
-                    value={jumpToPageInput}
-                    onChange={(e) => setJumpToPageInput(e.target.value)}
-                    onKeyDown={handleKeyPress}
-                    onBlur={() => {
-                      if (!jumpToPageInput) setShowJumpInput(false);
-                    }}
-                    className="w-16 px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200"
-                    placeholder={currentPage.toString()}
-                    autoFocus
-                  />
-                  <button
-                    onClick={handleJumpToPage}
-                    className="px-2 py-1 text-xs bg-purple-600 text-white rounded hover:bg-purple-700 transition-colors duration-200"
-                  >
-                    Go
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
 
           {/* Navigation buttons */}
-          <nav className="flex items-center space-x-1">
+          <nav className="flex items-center space-x-2">
             {/* First page button */}
             <button
               onClick={() => onPageChange(1)}
               disabled={currentPage <= 1}
-              className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              className="p-2 text-gray-500 cursor-pointer hover:text-purple-600 hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-gray-500 transition-all duration-200 border border-gray-200 hover:border-purple-200"
               title="First page"
             >
               <ChevronsLeft className="w-4 h-4" />
@@ -214,20 +178,20 @@ const Pagination = ({
             <button
               onClick={() => onPageChange(currentPage - 1)}
               disabled={currentPage <= 1}
-              className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              className="p-2 text-gray-500 cursor-pointer hover:text-purple-600 hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-gray-500 transition-all duration-200 border border-gray-200 hover:border-purple-200"
               title="Previous page"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
 
             {/* Page numbers */}
-            <div className="flex items-center space-x-1">
+            <div className="flex items-center space-x-2">
               {getVisiblePages().map((page, index) => {
                 if (page === "ellipsis-start" || page === "ellipsis-end") {
                   return (
                     <button
                       key={`ellipsis-${index}`}
-                      className="px-3 py-2 text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                      className="px-3 py-2 text-gray-400 cursor-pointer hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-all duration-200"
                       onClick={() => setShowJumpInput(true)}
                       title="More pages"
                     >
@@ -241,10 +205,10 @@ const Pagination = ({
                   <button
                     key={page}
                     onClick={() => onPageChange(page)}
-                    className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                    className={`min-w-[40px] px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-300 ${
                       isActive
-                        ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/25 transform scale-105"
-                        : "text-gray-700 hover:text-purple-600 hover:bg-purple-50 hover:shadow-md"
+                        ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/30 transform scale-110 ring-2 ring-purple-200"
+                        : "text-gray-700 bg-white hover:text-purple-600 hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 hover:shadow-md hover:scale-105 border border-gray-200"
                     }`}
                   >
                     {page}
@@ -257,7 +221,7 @@ const Pagination = ({
             <button
               onClick={() => onPageChange(currentPage + 1)}
               disabled={currentPage >= totalPages}
-              className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              className="p-2 text-gray-500 cursor-pointer hover:text-purple-600 hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-gray-500 transition-all duration-200 border border-gray-200 hover:border-purple-200"
               title="Next page"
             >
               <ChevronRight className="w-4 h-4" />
@@ -267,7 +231,7 @@ const Pagination = ({
             <button
               onClick={() => onPageChange(totalPages)}
               disabled={currentPage >= totalPages}
-              className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              className="p-2 text-gray-500 cursor-pointer hover:text-purple-600 hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-gray-500 transition-all duration-200 border border-gray-200 hover:border-purple-200"
               title="Last page"
             >
               <ChevronsRight className="w-4 h-4" />
