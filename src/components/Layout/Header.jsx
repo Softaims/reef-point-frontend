@@ -73,7 +73,7 @@ export default function Header() {
             <img
               src={headerLogo}
               alt="Reef-swap"
-              className="w-20 h-auto sm:w-32 transition-transform duration-300 hover:scale-105"
+              className="w-20 cursor-pointer h-auto sm:w-32 transition-transform duration-300 hover:scale-105"
               width={131}
               height={44}
             />
