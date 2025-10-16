@@ -2,6 +2,9 @@ import { useState, useEffect } from "react";
 import Sidebar from "../components/Dashboard/Sidebar";
 import Navbar from "../components/Dashboard/Navbar";
 import CampaignTable from "../components/Dashboard/CampaignTable";
+import CreateCampaignModal from "../components/Dashboard/CreateCampaignModal";
+import { Plus } from "lucide-react";
+import Uik from "@reef-chain/ui-kit";
 import apiService from "../api/apiService";
 
 const CampaignsPage = () => {
@@ -9,6 +12,8 @@ const CampaignsPage = () => {
   const [campaigns, setCampaigns] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [fetchError, setFetchError] = useState(null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [editingCampaign, setEditingCampaign] = useState(null);
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
@@ -74,6 +79,41 @@ const CampaignsPage = () => {
     }
   };
 
+  // Open modal for create
+  const handleCreateCampaign = () => {
+    setEditingCampaign(null);
+    setIsCreateModalOpen(true);
+  };
+
+  // Open modal for edit
+  const handleEditCampaign = (campaign) => {
+    setEditingCampaign(campaign);
+    setIsCreateModalOpen(true);
+  };
+
+  // Add or update campaign
+  const handleSaveCampaign = async (campaignData) => {
+    try {
+      console.log("Saving campaign data:", campaignData);
+
+      // Always refresh campaigns from API after successful save
+      // since the API call was already made in the modal
+      await fetchCampaigns(pagination.page, pagination.limit, false);
+
+      console.log("Campaigns refreshed successfully");
+    } catch (error) {
+      console.error("Failed to refresh campaigns after save:", error);
+    } finally {
+      setEditingCampaign(null);
+      setIsCreateModalOpen(false);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsCreateModalOpen(false);
+    setEditingCampaign(null);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Sidebar
@@ -94,6 +134,31 @@ const CampaignsPage = () => {
                 total pools)
               </p>
             </div>
+
+            {/* Create Button with Bubble Effect */}
+            <div className="flex justify-center lg:justify-end">
+              <div
+                className="relative w-full sm:w-[12rem] h-[3rem] rounded-2xl overflow-hidden"
+                style={{
+                  background:
+                    "linear-gradient(90deg, #742cb2 0%, #ae27a5 100%)",
+                }}
+              >
+                {/* Bubble effect background - positioned to fill button */}
+                <div className="absolute inset-0 w-full h-full z-10 pointer-events-none">
+                  <Uik.Bubbles />
+                </div>
+
+                {/* Button content */}
+                <button
+                  onClick={handleCreateCampaign}
+                  className="relative z-20 text-white w-full h-full rounded-2xl shadow-[0_5px_20px_-10px_#742cb2] font-medium transition-all duration-200 transform hover:scale-105 flex items-center justify-center space-x-2 text-sm lg:text-base cursor-pointer bg-transparent border-none hover:shadow-[0_8px_30px_-12px_#742cb2]"
+                >
+                  <Plus className="w-4 lg:w-5 h-4 lg:h-5" />
+                  <span>Create Campaign</span>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -109,6 +174,7 @@ const CampaignsPage = () => {
         ) : (
           <CampaignTable
             campaigns={campaigns}
+            onEditCampaign={handleEditCampaign}
             // Pagination props
             currentPage={pagination.page}
             totalPages={pagination.totalPages}
@@ -121,6 +187,15 @@ const CampaignsPage = () => {
             pageSizeOptions={[10, 20, 50, 100]}
           />
         )}
+
+        {/* Create/Edit Campaign Modal */}
+        <CreateCampaignModal
+          isOpen={isCreateModalOpen}
+          onClose={handleCloseModal}
+          onCreate={handleSaveCampaign}
+          initialData={editingCampaign}
+          isEdit={!!editingCampaign}
+        />
       </main>
     </div>
   );

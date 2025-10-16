@@ -17,11 +17,19 @@ const Dashboard = () => {
   const [fetchError, setFetchError] = useState(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingCampaign, setEditingCampaign] = useState(null);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 10,
+    totalCount: 0,
+    totalPages: 0,
+    hasNext: false,
+    hasPrev: false,
+  });
 
   const stats = [
     {
       name: "Total Campaigns",
-      value: "12",
+      value: pagination.totalCount.toString(),
       change: "+2.5%",
       changeType: "increase",
       icon: Activity,
@@ -61,6 +69,58 @@ const Dashboard = () => {
     setIsCreateModalOpen(true);
   };
 
+  const fetchCampaigns = async (
+    page = 1,
+    limit = pagination.limit,
+    isInitialLoad = false
+  ) => {
+    if (isInitialLoad) {
+      setIsLoading(true);
+    }
+    setFetchError(null);
+    try {
+      const response = await apiService.getCampaigns(page, limit);
+      console.log("🚀 ~ fetchCampaigns ~ response:", response);
+
+      if (response && response.data) {
+        setCampaigns(response.data);
+        setPagination({
+          page: parseInt(response.pagination.page),
+          limit: parseInt(response.pagination.limit),
+          totalCount: response.pagination.totalCount,
+          totalPages: response.pagination.totalPages,
+          hasNext: response.pagination.hasNext,
+          hasPrev: response.pagination.hasPrev,
+        });
+      }
+    } catch (err) {
+      setFetchError(err.message || "Failed to fetch campaigns");
+    } finally {
+      if (isInitialLoad) {
+        setIsLoading(false);
+      }
+    }
+  };
+
+  const handlePageChange = (newPage) => {
+    if (
+      newPage >= 1 &&
+      newPage <= pagination.totalPages &&
+      newPage !== pagination.page
+    ) {
+      fetchCampaigns(newPage, pagination.limit, false);
+    }
+  };
+
+  const handleItemsPerPageChange = (newLimit) => {
+    if (newLimit !== pagination.limit) {
+      const newPagination = { ...pagination, limit: newLimit };
+      setPagination(newPagination);
+      // Reset to page 1 when changing page size
+      fetchCampaigns(1, newLimit, false);
+    }
+  };
+
   // Add or update campaign
   const handleSaveCampaign = async (campaignData) => {
     try {
@@ -68,16 +128,7 @@ const Dashboard = () => {
 
       // Always refresh campaigns from API after successful save
       // since the API call was already made in the modal
-      const response = await apiService.getCampaigns();
-      let data = [];
-      if (Array.isArray(response)) {
-        data = response;
-      } else if (response && Array.isArray(response.data)) {
-        data = response.data;
-      } else if (response && typeof response === "object") {
-        data = [response];
-      }
-      setCampaigns(data);
+      await fetchCampaigns(pagination.page, pagination.limit, false);
 
       console.log("Campaigns refreshed successfully");
     } catch (error) {
@@ -93,52 +144,9 @@ const Dashboard = () => {
     setEditingCampaign(null);
   };
 
-  // Delete campaign
-  const handleDeleteCampaign = async (campaign) => {
-    if (
-      confirm(
-        `Are you sure you want to delete the ${campaign.token0Symbol}/${campaign.token1Symbol} campaign?`
-      )
-    ) {
-      try {
-        if (campaign.id) {
-          await apiService.deleteCampaign(campaign.id);
-        }
-        setCampaigns((prev) =>
-          prev.filter((c) => c.poolAddress !== campaign.poolAddress)
-        );
-      } catch (error) {
-        console.error("Failed to delete campaign:", error);
-        alert("Failed to delete campaign. Please try again.");
-      }
-    }
-  };
   // Fetch campaigns from backend on mount
   useEffect(() => {
-    const fetchCampaigns = async () => {
-      console.log("🚀 ~ fetchCampaigns ~ user:");
-      setIsLoading(true);
-      setFetchError(null);
-      try {
-        const response = await apiService.getCampaigns();
-        console.log("🚀 ~ fetchCampaigns ~ response: on dashbaord", response);
-        // Support array, {data: array}, or single object
-        let data = [];
-        if (Array.isArray(response)) {
-          data = response;
-        } else if (response && Array.isArray(response.data)) {
-          data = response.data;
-        } else if (response && typeof response === "object") {
-          data = [response];
-        }
-        setCampaigns(data);
-      } catch (err) {
-        setFetchError(err.message || "Failed to fetch campaigns");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchCampaigns();
+    fetchCampaigns(1, pagination.limit, true); // Initial load
   }, []);
 
   return (
@@ -159,7 +167,8 @@ const Dashboard = () => {
                 Marketing Campaigns
               </h1>
               <p className="text-gray-600 mt-1 text-sm sm:text-base">
-                Manage and monitor your marketing campaigns
+                Manage and monitor your marketing campaigns (
+                {pagination.totalCount} total pools)
               </p>
             </div>
 
@@ -260,7 +269,16 @@ const Dashboard = () => {
             <CampaignTable
               campaigns={campaigns}
               onEditCampaign={handleEditCampaign}
-              onDeleteCampaign={handleDeleteCampaign}
+              // Pagination props
+              currentPage={pagination.page}
+              totalPages={pagination.totalPages}
+              totalItems={pagination.totalCount}
+              itemsPerPage={pagination.limit}
+              onPageChange={handlePageChange}
+              onItemsPerPageChange={handleItemsPerPageChange}
+              showPageSizeSelector={true}
+              showJumpToPage={true}
+              pageSizeOptions={[10, 20, 50, 100]}
             />
           )}
           {/* Create/Edit Campaign Modal */}

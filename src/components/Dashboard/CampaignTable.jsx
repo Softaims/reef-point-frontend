@@ -1,9 +1,8 @@
-import { Edit, Trash2, Calendar } from "lucide-react";
+import { Edit, Calendar } from "lucide-react";
 import Pagination from "../common/Pagination";
 
 const CampaignTable = ({
   campaigns,
-  onDeleteCampaign,
   onEditCampaign,
   // Pagination props
   currentPage,
@@ -85,7 +84,7 @@ const CampaignTable = ({
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Meme Season
               </th>
-              {(onEditCampaign || onDeleteCampaign) && (
+              {onEditCampaign && (
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Actions
                 </th>
@@ -166,35 +165,20 @@ const CampaignTable = ({
                     </div>
                   </div>
                 </td>
-                {(onEditCampaign || onDeleteCampaign) && (
+                {onEditCampaign && (
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <div className="flex items-center space-x-6">
-                      {onEditCampaign && (
-                        <div className="flex flex-col items-center group">
-                          <button
-                            className="text-purple-600 hover:text-purple-800 p-1 hover:bg-purple-50 rounded transition-colors"
-                            onClick={() => onEditCampaign(campaign)}
-                          >
-                            <Edit className="w-4 h-4 cursor-pointer" />
-                          </button>
-                          <span className="text-xs mt-1 text-purple-600 group-hover:text-purple-800 transition-colors">
-                            Edit
-                          </span>
-                        </div>
-                      )}
-                      {onDeleteCampaign && (
-                        <div className="flex flex-col items-center group">
-                          <button
-                            onClick={() => onDeleteCampaign(campaign)}
-                            className="text-red-600 hover:text-red-800 p-1 cursor-pointer hover:bg-red-50 rounded transition-colors"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                          <span className="text-xs mt-1 text-red-600 group-hover:text-red-800 transition-colors">
-                            Delete
-                          </span>
-                        </div>
-                      )}
+                    <div className="flex items-center justify-center">
+                      <div className="flex flex-col items-center group">
+                        <button
+                          className="text-purple-600 hover:text-purple-800 p-1 hover:bg-purple-50 rounded transition-colors"
+                          onClick={() => onEditCampaign(campaign)}
+                        >
+                          <Edit className="w-4 h-4 cursor-pointer" />
+                        </button>
+                        <span className="text-xs mt-1 text-purple-600 group-hover:text-purple-800 transition-colors">
+                          Edit
+                        </span>
+                      </div>
                     </div>
                   </td>
                 )}
