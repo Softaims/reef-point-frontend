@@ -62,23 +62,56 @@ const Dashboard = () => {
   };
 
   // Add or update campaign
-  const handleSaveCampaign = (campaign) => {
-    if (editingCampaign) {
-      setCampaigns((prev) =>
-        prev.map((c) =>
-          c.id === editingCampaign.id ? { ...c, ...campaign } : c
-        )
-      );
-    } else {
-      setCampaigns((prev) => [{ ...campaign, id: Date.now() }, ...prev]);
+  const handleSaveCampaign = async (campaignData) => {
+    try {
+      console.log("Saving campaign data:", campaignData);
+
+      // Always refresh campaigns from API after successful save
+      // since the API call was already made in the modal
+      const response = await apiService.getCampaigns();
+      let data = [];
+      if (Array.isArray(response)) {
+        data = response;
+      } else if (response && Array.isArray(response.data)) {
+        data = response.data;
+      } else if (response && typeof response === "object") {
+        data = [response];
+      }
+      setCampaigns(data);
+
+      console.log("Campaigns refreshed successfully");
+    } catch (error) {
+      console.error("Failed to refresh campaigns after save:", error);
+    } finally {
+      setEditingCampaign(null);
+      setIsCreateModalOpen(false);
     }
-    setEditingCampaign(null);
-    setIsCreateModalOpen(false);
   };
 
   const handleCloseModal = () => {
     setIsCreateModalOpen(false);
     setEditingCampaign(null);
+  };
+
+  // Delete campaign
+  const handleDeleteCampaign = async (campaign) => {
+    if (
+      confirm(
+        `Are you sure you want to delete the ${campaign.token0Symbol}/${campaign.token1Symbol} campaign?`
+      )
+    ) {
+      try {
+        if (campaign.id) {
+          await apiService.deleteCampaign(campaign.id);
+        }
+        setCampaigns((prev) =>
+          prev.filter((c) => c.poolAddress !== campaign.poolAddress)
+        );
+      } catch (error) {
+        console.error("Failed to delete campaign:", error);
+        alert("Failed to delete campaign. Please try again.");
+      }
+    }
   };
   // Fetch campaigns from backend on mount
   useEffect(() => {
@@ -227,6 +260,7 @@ const Dashboard = () => {
             <CampaignTable
               campaigns={campaigns}
               onEditCampaign={handleEditCampaign}
+              onDeleteCampaign={handleDeleteCampaign}
             />
           )}
           {/* Create/Edit Campaign Modal */}

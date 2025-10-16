@@ -48,6 +48,17 @@ const apiService = {
     }
   },
 
+  // Get all pools for dropdown
+  getPools: async () => {
+    try {
+      const response = await axios.get("/campaigns/pools/dropdown");
+      return response.data;
+    } catch (error) {
+      console.log("🚀 ~ getPools: ~ error:", error.response?.data || error);
+      throw error.response?.data || { message: "Failed to fetch pools" };
+    }
+  },
+
   // Get all campaigns
   // Get all campaigns with pagination
   getCampaigns: async (page = 1, limit = 20) => {
@@ -61,12 +72,40 @@ const apiService = {
       throw error.response?.data || { message: "Failed to fetch campaigns" };
     }
   },
-  // Update campaign
-  updateCampaign: async (payload) => {
+
+  // Create new campaign
+  createCampaign: async (campaignData) => {
+    console.log("🚀 ~ campaignData:", campaignData);
     try {
-      const response = await axios.post(`settings/update/`, payload);
+      const response = await axios.post(
+        "/campaigns/pools/bulk-eligibility",
+        campaignData
+      );
       return response.data;
     } catch (error) {
+      console.log(
+        "🚀 ~ createCampaign: ~ error:",
+        error.response?.data || error
+      );
+      throw error.response?.data || { message: "Failed to create campaign" };
+    }
+  },
+
+  // Update campaign
+  updateCampaign: async (poolAddress, campaignData) => {
+    try {
+      // /campaigns/pools/0x0000000000000000000000000000000001000000_0x15820d37b1cC11f102076070897ACde06511B2fa/eligibility
+      // pool address
+      const response = await axios.patch(
+        `/campaigns/pools/${poolAddress}/eligibility`,
+        campaignData
+      );
+      return response.data;
+    } catch (error) {
+      console.log(
+        "🚀 ~ updateCampaign: ~ error:",
+        error.response?.data || error
+      );
       throw error.response?.data || { message: "Failed to update campaign" };
     }
   },

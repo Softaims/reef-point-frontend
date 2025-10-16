@@ -1,186 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+import { X, Calendar, ChevronDown, Search } from "lucide-react";
 import apiService from "../../api/apiService";
-import {
-  X,
-  Calendar,
-  TrendingUp,
-  Settings,
-  Zap,
-  Droplets,
-  Search,
-  ChevronDown,
-  ChevronUp,
-} from "lucide-react";
-import { z } from "zod";
-
-// Available token pools - you can move this to a config file or fetch from API
-const AVAILABLE_POOLS = [
-  { id: "reef-usdc", name: "REEF/USDC", status: "coming_soon" },
-  { id: "reef-mrd", name: "REEF/MRD", status: "active" },
-  { id: "reef-hydra", name: "REEF/HYDRA", status: "active" },
-  { id: "reef-eth", name: "REEF/ETH", status: "active" },
-  { id: "reef-btc", name: "REEF/BTC", status: "active" },
-  { id: "usdc-eth", name: "USDC/ETH", status: "active" },
-  { id: "mrd-hydra", name: "MRD/HYDRA", status: "active" },
-];
-
-// Updated Zod validation schema
-const campaignSchema = z.object({
-  totalPools: z.number().min(1, { message: "Total pools must be at least 1" }),
-  isBootstrapping: z.boolean(),
-  bootstrappingStartDate: z
-    .string()
-    .min(1, { message: "Bootstrapping start date is required" }),
-  bootstrappingPools: z.array(z.string()),
-  isEarlySzn: z.boolean(),
-  earlySznStartDate: z
-    .string()
-    .min(1, { message: "Early season start date is required" }),
-  earlySznPools: z.array(z.string()),
-  isMemeSzn: z.boolean(),
-  memeSznStartDate: z
-    .string()
-    .min(1, { message: "Meme season start date is required" }),
-  memeSznPools: z.array(z.string()),
-});
-
-// Pool Selection Component
-const PoolSelector = ({
-  title,
-  icon: Icon,
-  iconColor,
-  selectedPools,
-  onPoolsChange,
-  isExpanded,
-  onToggleExpanded,
-  searchQuery,
-  onSearchChange,
-}) => {
-  const filteredPools = AVAILABLE_POOLS.filter((pool) =>
-    pool.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const handlePoolToggle = (poolId) => {
-    const isSelected = selectedPools.includes(poolId);
-    let newSelectedPools;
-
-    if (isSelected) {
-      newSelectedPools = selectedPools.filter((id) => id !== poolId);
-    } else {
-      newSelectedPools = [...selectedPools, poolId];
-    }
-
-    onPoolsChange(newSelectedPools);
-  };
-
-  const handleSelectAll = () => {
-    const allPoolIds = filteredPools.map((pool) => pool.id);
-    const areAllSelected = allPoolIds.every((id) => selectedPools.includes(id));
-
-    if (areAllSelected) {
-      const newSelectedPools = selectedPools.filter(
-        (id) => !allPoolIds.includes(id)
-      );
-      onPoolsChange(newSelectedPools);
-    } else {
-      const newSelectedPools = [...new Set([...selectedPools, ...allPoolIds])];
-      onPoolsChange(newSelectedPools);
-    }
-  };
-
-  return (
-    <div className="space-y-3 p-4 bg-white rounded-lg border border-gray-200">
-      <div
-        className="flex items-center justify-between cursor-pointer"
-        onClick={onToggleExpanded}
-      >
-        <div className="flex items-center space-x-3">
-          <Icon className={`w-5 h-5 ${iconColor}`} />
-          <h3 className="text-base font-semibold text-gray-900">{title}</h3>
-          <span className="text-sm text-gray-500">
-            ({selectedPools.length} selected)
-          </span>
-        </div>
-        {isExpanded ? (
-          <ChevronUp className="w-5 h-5 text-gray-400" />
-        ) : (
-          <ChevronDown className="w-5 h-5 text-gray-400" />
-        )}
-      </div>
-
-      {isExpanded && (
-        <div className="space-y-3">
-          {/* Search and Select All */}
-          <div className="flex flex-col sm:flex-row gap-3">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search pools..."
-                value={searchQuery}
-                onChange={(e) => onSearchChange(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              />
-            </div>
-            <button
-              type="button"
-              onClick={handleSelectAll}
-              className="px-4 py-2 text-sm font-medium text-purple-600 bg-purple-50 border border-purple-200 rounded-lg hover:bg-purple-100 transition-colors"
-            >
-              {filteredPools.every((pool) => selectedPools.includes(pool.id))
-                ? "Deselect All"
-                : "Select All"}
-            </button>
-          </div>
-
-          {/* Pool Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-48 overflow-y-auto">
-            {filteredPools.map((pool) => (
-              <div
-                key={pool.id}
-                className={`relative p-3 border-2 rounded-lg cursor-pointer transition-all duration-200 ${
-                  selectedPools.includes(pool.id)
-                    ? "border-purple-500 bg-purple-50"
-                    : "border-gray-200 hover:border-gray-300 bg-white"
-                }`}
-                onClick={() => handlePoolToggle(pool.id)}
-              >
-                <div className="flex items-center space-x-3">
-                  <input
-                    type="checkbox"
-                    checked={selectedPools.includes(pool.id)}
-                    onChange={() => handlePoolToggle(pool.id)}
-                    className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
-                  />
-                  <div className="flex-1">
-                    <div className="font-medium text-gray-900">{pool.name}</div>
-                    <div className="flex items-center space-x-2">
-                      <span
-                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                          pool.status === "active"
-                            ? "bg-green-100 text-green-800"
-                            : "bg-yellow-100 text-yellow-800"
-                        }`}
-                      >
-                        {pool.status === "active" ? "Active" : "Coming Soon"}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {filteredPools.length === 0 && (
-            <div className="text-center py-8 text-gray-500">
-              No pools found matching "{searchQuery}"
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-};
 
 const CreateCampaignModal = ({
   isOpen,
@@ -189,643 +9,573 @@ const CreateCampaignModal = ({
   initialData,
   isEdit,
 }) => {
+  console.log("🚀 ~ CreateCampaignModal ~ initialData:", initialData);
   const [formData, setFormData] = useState({
-    totalPools: "",
-    isBootstrapping: false,
+    poolAddress: "",
+    bootstrappingEligible: false,
     bootstrappingStartDate: "",
-    bootstrappingPools: [],
-    isEarlySzn: false,
+    earlySznEligible: false,
     earlySznStartDate: "",
-    earlySznPools: [],
-    isMemeSzn: false,
+    memeSznEligible: false,
     memeSznStartDate: "",
-    memeSznPools: [],
   });
+
+  const [pools, setPools] = useState([]);
+  const [poolsLoading, setPoolsLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [isPoolDropdownOpen, setIsPoolDropdownOpen] = useState(false);
+  const [poolSearchQuery, setPoolSearchQuery] = useState("");
 
-  // Separate search states for each campaign type
-  const [searchQueries, setSearchQueries] = useState({
-    bootstrapping: "",
-    earlySzn: "",
-    memeSzn: "",
-  });
-
-  // Expanded states for each pool selector
-  const [expandedSections, setExpandedSections] = useState({
-    bootstrapping: true,
-    earlySzn: true,
-    memeSzn: true,
-  });
-
-  // Helper to convert ISO string to 'yyyy-MM-ddTHH:mm' for datetime-local
+  // Helper functions
   const toDatetimeLocal = (isoString) => {
     if (!isoString) return "";
-    const date = new Date(isoString);
-    const pad = (n) => n.toString().padStart(2, "0");
-    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
-      date.getDate()
-    )}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+    return new Date(isoString).toISOString().slice(0, 16);
   };
 
+  const toISOString = (datetimeLocal) => {
+    if (!datetimeLocal) return "";
+    return new Date(datetimeLocal).toISOString();
+  };
+
+  // Fetch pools on mount
   useEffect(() => {
-    if (isOpen && initialData) {
+    if (isOpen) {
+      fetchPools();
+    }
+  }, [isOpen]);
+
+  // Initialize form data
+  useEffect(() => {
+    if (isOpen && initialData && isEdit) {
       setFormData({
-        totalPools: initialData.totalPools?.toString() || "",
-        isBootstrapping: !!initialData.isBootstrapping,
+        poolAddress: initialData.poolAddress || "",
+        bootstrappingEligible: initialData.bootstrappingEligible || false,
         bootstrappingStartDate: toDatetimeLocal(
           initialData.bootstrappingStartDate
         ),
-        bootstrappingPools: initialData.bootstrappingPools || [],
-        isEarlySzn: !!initialData.isEarlySzn,
+        earlySznEligible: initialData.earlySznEligible || false,
         earlySznStartDate: toDatetimeLocal(initialData.earlySznStartDate),
-        earlySznPools: initialData.earlySznPools || [],
-        isMemeSzn: !!initialData.isMemeSzn,
+        memeSznEligible: initialData.memeSznEligible || false,
         memeSznStartDate: toDatetimeLocal(initialData.memeSznStartDate),
-        memeSznPools: initialData.memeSznPools || [],
       });
-    } else if (isOpen && !initialData) {
+    } else if (isOpen && !isEdit) {
       setFormData({
-        totalPools: "",
-        isBootstrapping: false,
+        poolAddress: "",
+        bootstrappingEligible: false,
         bootstrappingStartDate: "",
-        bootstrappingPools: [],
-        isEarlySzn: false,
+        earlySznEligible: false,
         earlySznStartDate: "",
-        earlySznPools: [],
-        isMemeSzn: false,
+        memeSznEligible: false,
         memeSznStartDate: "",
-        memeSznPools: [],
       });
     }
-  }, [isOpen, initialData]);
+  }, [isOpen, initialData, isEdit]);
+
+  const fetchPools = async () => {
+    setPoolsLoading(true);
+    try {
+      const response = await apiService.getPools();
+      const poolsData = Array.isArray(response)
+        ? response
+        : response?.data || [];
+      setPools(poolsData);
+    } catch (error) {
+      console.error("Failed to fetch pools:", error);
+      setErrors({ general: "Failed to load pools" });
+    } finally {
+      setPoolsLoading(false);
+    }
+  };
 
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: undefined }));
+      setErrors((prev) => ({ ...prev, [field]: "" }));
     }
   };
 
-  const handleSearchChange = (campaignType, query) => {
-    setSearchQueries((prev) => ({
-      ...prev,
-      [campaignType]: query,
-    }));
-  };
+  const validateForm = () => {
+    const newErrors = {};
 
-  const handleToggleExpanded = (campaignType) => {
-    setExpandedSections((prev) => ({
-      ...prev,
-      [campaignType]: !prev[campaignType],
-    }));
+    if (!formData.poolAddress) {
+      newErrors.poolAddress = "Please select a pool";
+    }
+
+    if (
+      !formData.bootstrappingEligible &&
+      !formData.earlySznEligible &&
+      !formData.memeSznEligible
+    ) {
+      newErrors.seasons = "At least one season must be enabled";
+    }
+
+    if (formData.bootstrappingEligible && !formData.bootstrappingStartDate) {
+      newErrors.bootstrappingStartDate =
+        "Start date is required for bootstrapping season";
+    }
+
+    if (formData.earlySznEligible && !formData.earlySznStartDate) {
+      newErrors.earlySznStartDate = "Start date is required for early season";
+    }
+
+    if (formData.memeSznEligible && !formData.memeSznStartDate) {
+      newErrors.memeSznStartDate = "Start date is required for meme season";
+    }
+
+    const now = new Date();
+    if (
+      formData.bootstrappingStartDate &&
+      new Date(formData.bootstrappingStartDate) <= now
+    ) {
+      newErrors.bootstrappingStartDate = "Start date must be in the future";
+    }
+
+    if (
+      formData.earlySznStartDate &&
+      new Date(formData.earlySznStartDate) <= now
+    ) {
+      newErrors.earlySznStartDate = "Start date must be in the future";
+    }
+
+    if (
+      formData.memeSznStartDate &&
+      new Date(formData.memeSznStartDate) <= now
+    ) {
+      newErrors.memeSznStartDate = "Start date must be in the future";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validateForm()) return;
+
     setIsLoading(true);
-
-    const requiredErrors = {};
-    if (!formData.totalPools || isNaN(Number(formData.totalPools)))
-      requiredErrors.totalPools = "Total pools is required";
-    if (formData.isBootstrapping && !formData.bootstrappingStartDate)
-      requiredErrors.bootstrappingStartDate =
-        "Bootstrapping start date is required";
-    if (formData.isEarlySzn && !formData.earlySznStartDate)
-      requiredErrors.earlySznStartDate = "Early season start date is required";
-    if (formData.isMemeSzn && !formData.memeSznStartDate)
-      requiredErrors.memeSznStartDate = "Meme season start date is required";
-
-    // Validate that at least one pool is selected for enabled campaigns
-    if (formData.isBootstrapping && formData.bootstrappingPools.length === 0) {
-      requiredErrors.bootstrappingPools =
-        "At least one pool must be selected for Bootstrapping";
-    }
-    if (formData.isEarlySzn && formData.earlySznPools.length === 0) {
-      requiredErrors.earlySznPools =
-        "At least one pool must be selected for Early Season";
-    }
-    if (formData.isMemeSzn && formData.memeSznPools.length === 0) {
-      requiredErrors.memeSznPools =
-        "At least one pool must be selected for Meme Season";
-    }
-
-    if (Object.keys(requiredErrors).length > 0) {
-      setErrors(requiredErrors);
-      setIsLoading(false);
-      return;
-    }
+    setErrors({});
 
     try {
-      // Convert totalPools to number for validation
-      const dataToValidate = {
-        ...formData,
-        totalPools: Number.parseInt(formData.totalPools) || 0,
-      };
+      // Build the campaign object
+      const campaignObject = { poolAddress: formData.poolAddress };
 
-      // Validate form data
-      const validatedData = campaignSchema.parse(dataToValidate);
+      if (formData.bootstrappingEligible) {
+        campaignObject.bootstrappingEligible = true;
+        campaignObject.bootstrappingStartDate = toISOString(
+          formData.bootstrappingStartDate
+        );
+      }
 
-      // Clear any existing errors
-      setErrors({});
+      if (formData.earlySznEligible) {
+        campaignObject.earlySznEligible = true;
+        campaignObject.earlySznStartDate = toISOString(
+          formData.earlySznStartDate
+        );
+      }
 
-      // Prepare payload for API (convert datetime-local to ISO)
-      const toISO = (val) => (val ? new Date(val).toISOString() : "");
-      const payload = {
-        ...validatedData,
-        bootstrappingStartDate: toISO(formData.bootstrappingStartDate),
-        earlySznStartDate: toISO(formData.earlySznStartDate),
-        memeSznStartDate: toISO(formData.memeSznStartDate),
-      };
+      if (formData.memeSznEligible) {
+        campaignObject.memeSznEligible = true;
+        campaignObject.memeSznStartDate = toISOString(
+          formData.memeSznStartDate
+        );
+      }
 
-      console.log("🚀 ~ handleSubmit ~ isEdit:", isEdit);
-      console.log("🚀 ~ handleSubmit ~ initialData:", initialData);
-      if (isEdit && initialData?.id) {
-        payload.id = initialData.id;
-        await apiService.updateCampaign(payload);
+      console.log("Campaign object:", campaignObject);
+
+      // For create, send as array. For edit, send as single object
+      if (isEdit && initialData?.poolAddress) {
+        await apiService.updateCampaign(
+          initialData.poolAddress,
+          campaignObject
+        );
       } else {
-        // For create operations, you might want to call apiService.createCampaign(payload)
-        await new Promise((resolve) => setTimeout(resolve, 1500));
+        // API expects array of campaign objects
+        const campaignDataArray = [campaignObject];
+        console.log("Sending campaign data array:", campaignDataArray);
+        await apiService.createCampaign(campaignDataArray);
       }
 
-      // Call onCreate to update parent state
-      if (onCreate) {
-        onCreate(isEdit ? { ...payload } : validatedData);
-      }
-
-      // Reset form and close modal (only for create)
-      if (!isEdit) {
-        setFormData({
-          totalPools: "",
-          isBootstrapping: false,
-          bootstrappingStartDate: "",
-          bootstrappingPools: [],
-          isEarlySzn: false,
-          earlySznStartDate: "",
-          earlySznPools: [],
-          isMemeSzn: false,
-          memeSznStartDate: "",
-          memeSznPools: [],
-        });
-      }
-      onClose();
+      onCreate(campaignObject);
+      handleClose();
     } catch (error) {
-      if (error instanceof z.ZodError) {
-        // Show all errors for each field (array of messages)
-        const fieldErrors = {};
-        error.errors.forEach((err) => {
-          if (err.path[0]) {
-            if (!fieldErrors[err.path[0]]) fieldErrors[err.path[0]] = [];
-            fieldErrors[err.path[0]].push(err.message);
-          }
-        });
-        // If only one error per field, flatten to string for backward compatibility
-        Object.keys(fieldErrors).forEach((key) => {
-          if (fieldErrors[key].length === 1)
-            fieldErrors[key] = fieldErrors[key][0];
-        });
-        setErrors(fieldErrors);
-      } else {
-        console.error("Error creating/updating campaign:", error);
-      }
+      console.error("Campaign submission error:", error);
+      setErrors({
+        general:
+          error.message || `Failed to ${isEdit ? "update" : "create"} campaign`,
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleClose = () => {
-    if (!isLoading) {
-      setFormData({
-        totalPools: "",
-        isBootstrapping: false,
-        bootstrappingStartDate: "",
-        bootstrappingPools: [],
-        isEarlySzn: false,
-        earlySznStartDate: "",
-        earlySznPools: [],
-        isMemeSzn: false,
-        memeSznStartDate: "",
-        memeSznPools: [],
-      });
-      setErrors({});
-      setSearchQueries({
-        bootstrapping: "",
-        earlySzn: "",
-        memeSzn: "",
-      });
-      onClose();
-    }
+    setFormData({
+      poolAddress: "",
+      bootstrappingEligible: false,
+      bootstrappingStartDate: "",
+      earlySznEligible: false,
+      earlySznStartDate: "",
+      memeSznEligible: false,
+      memeSznStartDate: "",
+    });
+    setErrors({});
+    setIsPoolDropdownOpen(false);
+    setPoolSearchQuery("");
+    onClose();
   };
 
-  // Disable main page scroll when modal is open
+  const getSelectedPool = () => {
+    return pools.find((pool) => pool.poolAddress === formData.poolAddress);
+  };
+
+  const filteredPools = pools.filter(
+    (pool) =>
+      pool.label?.toLowerCase().includes(poolSearchQuery.toLowerCase()) ||
+      pool.token0Symbol
+        ?.toLowerCase()
+        .includes(poolSearchQuery.toLowerCase()) ||
+      pool.token1Symbol?.toLowerCase().includes(poolSearchQuery.toLowerCase())
+  );
+
   useEffect(() => {
     if (isOpen) {
-      document.body.classList.add("overflow-hidden");
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.classList.remove("overflow-hidden");
+      document.body.style.overflow = "unset";
     }
-    return () => document.body.classList.remove("overflow-hidden");
+    return () => (document.body.style.overflow = "unset");
   }, [isOpen]);
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-white/30 backdrop-blur-[4px] flex items-center justify-center z-50 p-4 transition-all duration-300">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-y-auto">
-        {/* Modal Header */}
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900">
-              {isEdit
-                ? "Edit Campaign Configuration"
-                : "Create New Campaign Configuration"}
-            </h2>
-            <p className="text-gray-600 mt-1">
-              {isEdit
-                ? "Update your campaign seasons and pool eligibility"
-                : "Set up your campaign seasons and pool eligibility"}
-            </p>
-          </div>
+          <h2 className="text-2xl font-bold text-gray-900">
+            {isEdit ? "Edit Campaign" : "Create New Campaign"}
+          </h2>
           <button
             onClick={handleClose}
-            disabled={isLoading}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
+            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
           >
-            <X className="w-5 h-5 text-gray-500" />
+            <X className="w-5 h-5 text-gray-400" />
           </button>
         </div>
 
-        {/* Modal Content */}
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
-          {/* Total Pools */}
+          {errors.general && (
+            <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
+              {errors.general}
+            </div>
+          )}
+
           <div className="space-y-2">
-            <label
-              htmlFor="totalPools"
-              className="flex items-center text-sm font-medium text-gray-700"
-            >
-              <TrendingUp className="w-4 h-4 mr-2 text-purple-600" />
-              Total Pools
+            <label className="block text-sm font-medium text-gray-700">
+              Select Pool <span className="text-red-500">*</span>
             </label>
-            <input
-              id="totalPools"
-              type="number"
-              placeholder="Enter total number of pools"
-              value={formData.totalPools}
-              onChange={(e) => handleInputChange("totalPools", e.target.value)}
-              className={`w-full px-4 py-3 border-2 rounded-lg transition-all duration-200 focus:outline-none focus:ring-0 ${
-                errors.totalPools
-                  ? "border-red-300 focus:border-red-500 bg-red-50/50"
-                  : "border-gray-200 focus:border-purple-500 bg-white hover:border-gray-300"
-              }`}
-            />
-            {errors.totalPools && (
-              <p className="text-sm text-red-600 flex items-center">
-                <svg
-                  className="w-4 h-4 mr-1"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                {errors.totalPools}
-              </p>
-            )}
-          </div>
-
-          {/* Bootstrapping Section */}
-          <div className="space-y-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <Settings className="w-5 h-5 text-blue-600" />
-                <h3 className="text-lg font-semibold text-gray-900">
-                  Bootstrapping Campaign
-                </h3>
-              </div>
-              <div className="flex items-center space-x-3">
-                <input
-                  id="isBootstrapping"
-                  type="checkbox"
-                  checked={formData.isBootstrapping}
-                  onChange={(e) =>
-                    handleInputChange("isBootstrapping", e.target.checked)
-                  }
-                  className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
-                />
-                <label
-                  htmlFor="isBootstrapping"
-                  className="text-sm font-medium text-gray-700"
-                >
-                  Enable Campaign
-                </label>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label
-                htmlFor="bootstrappingStartDate"
-                className="flex items-center text-sm font-medium text-gray-700"
-              >
-                <Calendar className="w-4 h-4 mr-2 text-blue-600" />
-                Start Date
-              </label>
-              <input
-                id="bootstrappingStartDate"
-                type="datetime-local"
-                value={formData.bootstrappingStartDate}
-                onChange={(e) =>
-                  handleInputChange("bootstrappingStartDate", e.target.value)
-                }
-                className={`w-full px-4 py-3 border-2 rounded-lg transition-all duration-200 focus:outline-none focus:ring-0 ${
-                  errors.bootstrappingStartDate
-                    ? "border-red-300 focus:border-red-500 bg-red-50/50"
-                    : "border-gray-200 focus:border-purple-500 bg-white hover:border-gray-300"
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setIsPoolDropdownOpen(!isPoolDropdownOpen)}
+                className={`w-full px-4 py-3 text-left bg-white border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent flex items-center justify-between ${
+                  errors.poolAddress ? "border-red-300" : "border-gray-300"
                 }`}
-              />
-              {errors.bootstrappingStartDate && (
-                <p className="text-sm text-red-600 flex items-center">
-                  <svg
-                    className="w-4 h-4 mr-1"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  {errors.bootstrappingStartDate}
-                </p>
+                disabled={poolsLoading}
+              >
+                <span
+                  className={
+                    getSelectedPool() ? "text-gray-900" : "text-gray-500"
+                  }
+                >
+                  {poolsLoading
+                    ? "Loading pools..."
+                    : getSelectedPool()?.label || "Choose a pool"}
+                </span>
+                <ChevronDown
+                  className={`w-5 h-5 text-gray-400 transform transition-transform ${
+                    isPoolDropdownOpen ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+
+              {isPoolDropdownOpen && !poolsLoading && (
+                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                  <div className="p-3 border-b border-gray-100">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <input
+                        type="text"
+                        placeholder="Search pools..."
+                        value={poolSearchQuery}
+                        onChange={(e) => setPoolSearchQuery(e.target.value)}
+                        className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="max-h-40 overflow-y-auto">
+                    {filteredPools.map((pool) => (
+                      <button
+                        key={pool.poolAddress}
+                        type="button"
+                        onClick={() => {
+                          handleInputChange("poolAddress", pool.poolAddress);
+                          setIsPoolDropdownOpen(false);
+                          setPoolSearchQuery("");
+                        }}
+                        className={`w-full px-4 py-3 text-left hover:bg-purple-50 transition-colors border-b border-gray-50 last:border-b-0 ${
+                          formData.poolAddress === pool.poolAddress
+                            ? "bg-purple-50 text-purple-700"
+                            : "text-gray-900"
+                        }`}
+                      >
+                        <div className="font-medium">{pool.label}</div>
+                        <div className="text-sm text-gray-500">
+                          {pool.token0Symbol}/{pool.token1Symbol} •{" "}
+                          {pool.poolType}
+                        </div>
+                      </button>
+                    ))}
+                    {filteredPools.length === 0 && (
+                      <div className="px-4 py-3 text-gray-500 text-sm text-center">
+                        No pools found matching "{poolSearchQuery}"
+                      </div>
+                    )}
+                  </div>
+                </div>
               )}
             </div>
-
-            {/* Bootstrapping Pool Selection */}
-            <PoolSelector
-              title="Eligible Pools for Bootstrapping"
-              icon={Droplets}
-              iconColor="text-blue-600"
-              selectedPools={formData.bootstrappingPools}
-              onPoolsChange={(pools) =>
-                handleInputChange("bootstrappingPools", pools)
-              }
-              isExpanded={expandedSections.bootstrapping}
-              onToggleExpanded={() => handleToggleExpanded("bootstrapping")}
-              searchQuery={searchQueries.bootstrapping}
-              onSearchChange={(query) =>
-                handleSearchChange("bootstrapping", query)
-              }
-            />
-            {errors.bootstrappingPools && (
-              <p className="text-sm text-red-600 flex items-center">
-                <svg
-                  className="w-4 h-4 mr-1"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                {errors.bootstrappingPools}
-              </p>
+            {errors.poolAddress && (
+              <p className="text-red-500 text-sm">{errors.poolAddress}</p>
             )}
           </div>
 
-          {/* Early Season and Meme Season Row */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Early Season Section */}
-            <div className="space-y-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <Calendar className="w-5 h-5 text-green-600" />
-                  <h3 className="text-base font-semibold text-gray-900">
-                    Early Season Campaign
-                  </h3>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <input
-                    id="isEarlySzn"
-                    type="checkbox"
-                    checked={formData.isEarlySzn}
-                    onChange={(e) =>
-                      handleInputChange("isEarlySzn", e.target.checked)
-                    }
-                    className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
-                  />
-                  <label
-                    htmlFor="isEarlySzn"
-                    className="text-sm font-medium text-gray-700"
-                  >
-                    Enable
-                  </label>
-                </div>
-              </div>
+          {errors.seasons && (
+            <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
+              {errors.seasons}
+            </div>
+          )}
 
-              <div className="space-y-2">
-                <label
-                  htmlFor="earlySznStartDate"
-                  className="flex items-center text-sm font-medium text-gray-700"
-                >
-                  <Calendar className="w-4 h-4 mr-2 text-green-600" />
-                  Start Date
-                </label>
-                <input
-                  id="earlySznStartDate"
-                  type="datetime-local"
-                  value={formData.earlySznStartDate}
-                  onChange={(e) =>
-                    handleInputChange("earlySznStartDate", e.target.value)
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-gray-900">
+              Season Configuration
+            </h3>
+
+            <div className="p-4 bg-blue-50 rounded-lg border border-blue-100">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                    <Calendar className="w-4 h-4 text-blue-600" />
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-900">
+                      Bootstrapping Season
+                    </h4>
+                    <p className="text-sm text-gray-600">
+                      Enable early adoption rewards
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() =>
+                    handleInputChange(
+                      "bootstrappingEligible",
+                      !formData.bootstrappingEligible
+                    )
                   }
-                  className={`w-full px-4 py-3 border-2 rounded-lg transition-all duration-200 focus:outline-none focus:ring-0 ${
-                    errors.earlySznStartDate
-                      ? "border-red-300 focus:border-red-500 bg-red-50/50"
-                      : "border-gray-200 focus:border-purple-500 bg-white hover:border-gray-300"
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 ${
+                    formData.bootstrappingEligible
+                      ? "bg-purple-600"
+                      : "bg-gray-200"
                   }`}
-                />
-                {errors.earlySznStartDate && (
-                  <p className="text-sm text-red-600 flex items-center">
-                    <svg
-                      className="w-4 h-4 mr-1"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    {errors.earlySznStartDate}
-                  </p>
-                )}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      formData.bootstrappingEligible
+                        ? "translate-x-6"
+                        : "translate-x-1"
+                    }`}
+                  />
+                </button>
               </div>
 
-              {/* Early Season Pool Selection */}
-              <PoolSelector
-                title="Eligible Pools for Early Season"
-                icon={Droplets}
-                iconColor="text-green-600"
-                selectedPools={formData.earlySznPools}
-                onPoolsChange={(pools) =>
-                  handleInputChange("earlySznPools", pools)
-                }
-                isExpanded={expandedSections.earlySzn}
-                onToggleExpanded={() => handleToggleExpanded("earlySzn")}
-                searchQuery={searchQueries.earlySzn}
-                onSearchChange={(query) =>
-                  handleSearchChange("earlySzn", query)
-                }
-              />
-              {errors.earlySznPools && (
-                <p className="text-sm text-red-600 flex items-center">
-                  <svg
-                    className="w-4 h-4 mr-1"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  {errors.earlySznPools}
-                </p>
+              {formData.bootstrappingEligible && (
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Start Date <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="datetime-local"
+                    value={formData.bootstrappingStartDate}
+                    onChange={(e) =>
+                      handleInputChange(
+                        "bootstrappingStartDate",
+                        e.target.value
+                      )
+                    }
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
+                      errors.bootstrappingStartDate
+                        ? "border-red-300"
+                        : "border-gray-300"
+                    }`}
+                  />
+                  {errors.bootstrappingStartDate && (
+                    <p className="text-red-500 text-sm">
+                      {errors.bootstrappingStartDate}
+                    </p>
+                  )}
+                </div>
               )}
             </div>
 
-            {/* Meme Season Section */}
-            <div className="space-y-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-              <div className="flex items-center justify-between">
+            <div className="p-4 bg-green-50 rounded-lg border border-green-100">
+              <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center space-x-3">
-                  <Zap className="w-5 h-5 text-pink-600" />
-                  <h3 className="text-base font-semibold text-gray-900">
-                    Meme Season Campaign
-                  </h3>
+                  <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                    <Calendar className="w-4 h-4 text-green-600" />
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-900">Early Season</h4>
+                    <p className="text-sm text-gray-600">
+                      Reward early participants
+                    </p>
+                  </div>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <input
-                    id="isMemeSzn"
-                    type="checkbox"
-                    checked={formData.isMemeSzn}
-                    onChange={(e) =>
-                      handleInputChange("isMemeSzn", e.target.checked)
-                    }
-                    className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
-                  />
-                  <label
-                    htmlFor="isMemeSzn"
-                    className="text-sm font-medium text-gray-700"
-                  >
-                    Enable
-                  </label>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <label
-                  htmlFor="memeSznStartDate"
-                  className="flex items-center text-sm font-medium text-gray-700"
-                >
-                  <Calendar className="w-4 h-4 mr-2 text-pink-600" />
-                  Start Date
-                </label>
-                <input
-                  id="memeSznStartDate"
-                  type="datetime-local"
-                  value={formData.memeSznStartDate}
-                  onChange={(e) =>
-                    handleInputChange("memeSznStartDate", e.target.value)
+                <button
+                  type="button"
+                  onClick={() =>
+                    handleInputChange(
+                      "earlySznEligible",
+                      !formData.earlySznEligible
+                    )
                   }
-                  className={`w-full px-4 py-3 border-2 rounded-lg transition-all duration-200 focus:outline-none focus:ring-0 ${
-                    errors.memeSznStartDate
-                      ? "border-red-300 focus:border-red-500 bg-red-50/50"
-                      : "border-gray-200 focus:border-purple-500 bg-white hover:border-gray-300"
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 ${
+                    formData.earlySznEligible ? "bg-purple-600" : "bg-gray-200"
                   }`}
-                />
-                {errors.memeSznStartDate && (
-                  <p className="text-sm text-red-600 flex items-center">
-                    <svg
-                      className="w-4 h-4 mr-1"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    {errors.memeSznStartDate}
-                  </p>
-                )}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      formData.earlySznEligible
+                        ? "translate-x-6"
+                        : "translate-x-1"
+                    }`}
+                  />
+                </button>
               </div>
 
-              {/* Meme Season Pool Selection */}
-              <PoolSelector
-                title="Eligible Pools for Meme Season"
-                icon={Droplets}
-                iconColor="text-pink-600"
-                selectedPools={formData.memeSznPools}
-                onPoolsChange={(pools) =>
-                  handleInputChange("memeSznPools", pools)
-                }
-                isExpanded={expandedSections.memeSzn}
-                onToggleExpanded={() => handleToggleExpanded("memeSzn")}
-                searchQuery={searchQueries.memeSzn}
-                onSearchChange={(query) => handleSearchChange("memeSzn", query)}
-              />
-              {errors.memeSznPools && (
-                <p className="text-sm text-red-600 flex items-center">
-                  <svg
-                    className="w-4 h-4 mr-1"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  {errors.memeSznPools}
-                </p>
+              {formData.earlySznEligible && (
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Start Date <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="datetime-local"
+                    value={formData.earlySznStartDate}
+                    onChange={(e) =>
+                      handleInputChange("earlySznStartDate", e.target.value)
+                    }
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
+                      errors.earlySznStartDate
+                        ? "border-red-300"
+                        : "border-gray-300"
+                    }`}
+                  />
+                  {errors.earlySznStartDate && (
+                    <p className="text-red-500 text-sm">
+                      {errors.earlySznStartDate}
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <div className="p-4 bg-pink-50 rounded-lg border border-pink-100">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center">
+                    <Calendar className="w-4 h-4 text-pink-600" />
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-900">Meme Season</h4>
+                    <p className="text-sm text-gray-600">
+                      Special meme token rewards
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() =>
+                    handleInputChange(
+                      "memeSznEligible",
+                      !formData.memeSznEligible
+                    )
+                  }
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 ${
+                    formData.memeSznEligible ? "bg-purple-600" : "bg-gray-200"
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      formData.memeSznEligible
+                        ? "translate-x-6"
+                        : "translate-x-1"
+                    }`}
+                  />
+                </button>
+              </div>
+
+              {formData.memeSznEligible && (
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Start Date <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="datetime-local"
+                    value={formData.memeSznStartDate}
+                    onChange={(e) =>
+                      handleInputChange("memeSznStartDate", e.target.value)
+                    }
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
+                      errors.memeSznStartDate
+                        ? "border-red-300"
+                        : "border-gray-300"
+                    }`}
+                  />
+                  {errors.memeSznStartDate && (
+                    <p className="text-red-500 text-sm">
+                      {errors.memeSznStartDate}
+                    </p>
+                  )}
+                </div>
               )}
             </div>
           </div>
 
-          {/* Modal Footer */}
           <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t border-gray-200">
             <button
               type="button"
               onClick={handleClose}
+              className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium transition-colors"
               disabled={isLoading}
-              className="flex-1 px-6 h-[3rem] border border-gray-300 cursor-pointer text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isLoading}
-              className="flex-1 h-[3rem] bg-gradient-to-br from-[#ae27a5] to-[#742cb2] shadow-[0_5px_20px_-10px_#742cb2] text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 transform hover:scale-105 cursor-pointer hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center"
+              className="flex-1 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 font-medium transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center"
             >
               {isLoading ? (
-                <div className="flex items-center">
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                  {isEdit
-                    ? "Updating Configuration..."
-                    : "Creating Configuration..."}
-                </div>
-              ) : isEdit ? (
-                "Update Configuration"
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                  {isEdit ? "Updating..." : "Creating..."}
+                </>
               ) : (
-                "Create Configuration"
+                <>{isEdit ? "Update Campaign" : "Create Campaign"}</>
               )}
             </button>
           </div>
