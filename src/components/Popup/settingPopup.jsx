@@ -14,6 +14,7 @@ import { WsProvider } from "@polkadot/api";
 import { u8aToBn } from "@polkadot/util";
 import { useAuth } from "../../contexts/AuthContext";
 import { useRef } from "react";
+import DotSpinner from "../common/DotSpinner";
 
 export default function SettingsPopup({ isOpen, onClose }) {
   const [selectedNetwork, setSelectedNetwork] = useState("Mainnet");
@@ -407,10 +408,8 @@ export default function SettingsPopup({ isOpen, onClose }) {
 
           <div className="flex items-center justify-center flex-col gap-4 sm:gap-6 mt-8 sm:mt-12 md:mt-16">
             {loading ? (
-              <div className="flex items-center justify-center py-8">
-                <div className="text-base sm:text-lg text-gray-600">
-                  Loading accounts...
-                </div>
+              <div className="flex items-center justify-center py-12">
+                <DotSpinner />
               </div>
             ) : walletError ? (
               <div className="flex flex-col items-center justify-center py-8 px-4 max-w-md">
