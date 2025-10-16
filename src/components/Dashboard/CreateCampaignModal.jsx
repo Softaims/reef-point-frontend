@@ -560,7 +560,7 @@ const CreateCampaignModal = ({
             <button
               type="button"
               onClick={handleClose}
-              className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium transition-colors"
+              className="flex-1 px-6 h-12 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium transition-colors"
               disabled={isLoading}
             >
               Cancel
@@ -568,11 +568,11 @@ const CreateCampaignModal = ({
             <button
               type="submit"
               disabled={isLoading}
-              className="flex-1 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 font-medium transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center"
+              className="flex-1 px-6 h-12 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 font-medium transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center"
             >
               {isLoading ? (
                 <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                  <div className="border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
                   {isEdit ? "Updating..." : "Creating..."}
                 </>
               ) : (
