@@ -424,7 +424,7 @@ export default function SettingsPopup({ isOpen, onClose }) {
                     </div>
                     <button
                       onClick={connectWallet}
-                      className="text-white py-3 px-6 rounded-2xl bg-gradient-to-br from-[#ae27a5] to-[#742cb2] shadow-[0_5px_20px_-10px_#742cb2] font-medium text-sm sm:text-base hover:from-[#742cb2] hover:to-[#ae27a5] transition-all duration-200 cursor-pointer"
+                      className="text-white py-2 cursor-pointer h-12 w-48 px-6 sm:py-3 sm:px-6 rounded-2xl bg-gradient-to-br from-[#ae27a5] to-[#742cb2] shadow-[0_5px_20px_-10px_#742cb2] font-medium text-sm sm:text-base"
                     >
                       Try Again
                     </button>
@@ -441,7 +441,7 @@ export default function SettingsPopup({ isOpen, onClose }) {
                     </div>
                     <button
                       onClick={connectWallet}
-                      className="text-white py-3 px-6 rounded-2xl bg-gradient-to-br from-[#ae27a5] to-[#742cb2] shadow-[0_5px_20px_-10px_#742cb2] font-medium text-sm sm:text-base hover:from-[#742cb2] hover:to-[#ae27a5] transition-all duration-200 cursor-pointer"
+                      className="text-white py-2 cursor-pointer h-12 w-48 px-6 sm:py-3 sm:px-6 rounded-2xl bg-gradient-to-br from-[#ae27a5] to-[#742cb2] shadow-[0_5px_20px_-10px_#742cb2] font-medium text-sm sm:text-base"
                     >
                       Try Again
                     </button>
