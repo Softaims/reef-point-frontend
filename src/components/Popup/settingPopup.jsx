@@ -35,12 +35,17 @@ export default function SettingsPopup({ isOpen, onClose }) {
     setLoading(true);
     try {
       const allInjected = await web3Enable("Reef Wallet Integration");
+      // console.log(
+      //   "🚀 ~ connectWallet ~ allInjected: line nmber 38",
+      //   allInjected
+      // );
       if (allInjected.length === 0) {
         alert("Please install the Reef Wallet extension");
         setLoading(false);
         return;
       }
       const walletAccounts = await web3Accounts();
+      console.log("🚀 ~ connectWallet ~ walletAccounts:", walletAccounts);
       if (walletAccounts.length === 0) {
         alert("No accounts found. Please unlock your Reef Wallet");
         setLoading(false);
@@ -56,6 +61,42 @@ export default function SettingsPopup({ isOpen, onClose }) {
   };
 
   // Function to fetch balance and EVM address for all accounts
+  // const fetchAccountDetails = async (accounts) => {
+  //   const wsProvider = new WsProvider("wss://rpc.reefscan.com/ws");
+  //   const provider = new Provider({ provider: wsProvider });
+  //   await provider.api.isReady;
+
+  //   const balances = {};
+  //   const evmAddrs = {};
+
+  //   for (const account of accounts) {
+  //     try {
+  //       const balance = await provider.api.query.system.account(
+  //         account.address
+  //       );
+  //       const freeBalance = u8aToBn(balance.data.free.toU8a()).toString();
+  //       const freeBalanceREEF = (
+  //         parseFloat(freeBalance) / Math.pow(10, 18)
+  //       ).toFixed(4);
+  //       balances[account.address] = freeBalanceREEF;
+  //       const evmAddress = await provider.api.query.evmAccounts.evmAddresses(
+  //         account.address
+  //       );
+  //       const evmHex = evmAddress.toHex();
+  //       evmAddrs[account.address] = evmHex;
+  //     } catch (error) {
+  //       console.error(`Error fetching details for ${account.address}:`, error);
+  //       balances[account.address] = "0.0000";
+  //       evmAddrs[account.address] = "";
+  //     }
+  //   }
+
+  //   setAccountBalances(balances);
+  //   setEvmAddresses(evmAddrs);
+  // };
+
+  // performance optimization
+  // Function to fetch balance and EVM address for all accounts
   const fetchAccountDetails = async (accounts) => {
     const wsProvider = new WsProvider("wss://rpc.reefscan.com/ws");
     const provider = new Provider({ provider: wsProvider });
@@ -64,26 +105,55 @@ export default function SettingsPopup({ isOpen, onClose }) {
     const balances = {};
     const evmAddrs = {};
 
-    for (const account of accounts) {
-      try {
-        const balance = await provider.api.query.system.account(
-          account.address
-        );
-        const freeBalance = u8aToBn(balance.data.free.toU8a()).toString();
-        const freeBalanceREEF = (
-          parseFloat(freeBalance) / Math.pow(10, 18)
-        ).toFixed(4);
-        balances[account.address] = freeBalanceREEF;
-        const evmAddress = await provider.api.query.evmAccounts.evmAddresses(
-          account.address
-        );
-        const evmHex = evmAddress.toHex();
-        evmAddrs[account.address] = evmHex;
-      } catch (error) {
-        console.error(`Error fetching details for ${account.address}:`, error);
-        balances[account.address] = "0.0000";
-        evmAddrs[account.address] = "";
-      }
+    // Helper function to add timeout to a promise
+    const withTimeout = (promise, ms = 5000) => {
+      return Promise.race([
+        promise,
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error("Request timed out")), ms)
+        ),
+      ]);
+    };
+
+    try {
+      // Fetch all balances and EVM addresses in parallel
+      const accountQueries = accounts.map(async (account) => {
+        try {
+          // Fetch balance
+          const balancePromise = provider.api.query.system.account(
+            account.address
+          );
+          const balance = await withTimeout(balancePromise, 5000); // 5-second timeout
+          const freeBalance = u8aToBn(balance.data.free.toU8a()).toString();
+          const freeBalanceREEF = (
+            parseFloat(freeBalance) / Math.pow(10, 18)
+          ).toFixed(4);
+          balances[account.address] = freeBalanceREEF;
+
+          // Fetch EVM address
+          const evmAddressPromise = provider.api.query.evmAccounts.evmAddresses(
+            account.address
+          );
+          const evmAddress = await withTimeout(evmAddressPromise, 5000); // 5-second timeout
+          const evmHex = evmAddress.toHex();
+          evmAddrs[account.address] = evmHex;
+        } catch (error) {
+          console.error(
+            `Error fetching details for ${account.address}:`,
+            error
+          );
+          balances[account.address] = "0.0000";
+          evmAddrs[account.address] = "";
+        }
+      });
+
+      // Execute all queries concurrently
+      await Promise.all(accountQueries);
+    } catch (error) {
+      console.error("Error in fetchAccountDetails:", error);
+    } finally {
+      // Disconnect the provider to free resources
+      await provider.api.disconnect();
     }
 
     setAccountBalances(balances);
@@ -169,9 +239,9 @@ export default function SettingsPopup({ isOpen, onClose }) {
             <div className="relative w-full sm:w-auto">
               <div
                 className="flex items-center justify-center gap-1 text-white py-2 px-3 sm:py-3 sm:px-4 rounded-2xl bg-gradient-to-br from-[#ae27a5] to-[#742cb2] shadow-[0_5px_20px_-10px_#742cb2] cursor-pointer"
-                onClick={toggleDropdown}
+                // onClick={toggleDropdown}
               >
-                <FiChevronDown className="w-5 h-5" />
+                {/* <FiChevronDown className="w-5 h-5" /> */}
                 <button className="font-medium text-sm sm:text-base cursor-pointer">
                   browser-extension
                 </button>
@@ -211,7 +281,7 @@ export default function SettingsPopup({ isOpen, onClose }) {
               <div className="flex items-center w-full sm:w-44 h-10 sm:h-12 justify-between px-2 sm:px-3 bg-[#EEEBF6] border-2 border-[#EEEBF6] rounded-lg shadow-[0_5px_10px_0_rgba(0,0,0,0.1)] p-1">
                 <button
                   onClick={() => setSelectedNetwork("Mainnet")}
-                  className={`w-[50%] h-[80%] cursor-pointer rounded-md text-xs sm:text-sm font-medium transition-all duration-200 ${
+                  className={`w-[100%] h-[80%] cursor-pointer rounded-md text-xs sm:text-sm font-medium transition-all duration-200 ${
                     selectedNetwork === "Mainnet"
                       ? "bg-white text-gray-800 shadow-sm"
                       : "text-gray-500 hover:text-gray-700"
@@ -219,7 +289,7 @@ export default function SettingsPopup({ isOpen, onClose }) {
                 >
                   Mainnet
                 </button>
-                <button
+                {/* <button
                   onClick={() => setSelectedNetwork("Testnet")}
                   className={`w-[50%] h-[80%] cursor-pointer rounded-md text-xs sm:text-sm font-medium transition-all duration-200 ${
                     selectedNetwork === "Testnet"
@@ -228,7 +298,7 @@ export default function SettingsPopup({ isOpen, onClose }) {
                   }`}
                 >
                   Testnet
-                </button>
+                </button> */}
               </div>
               <div className="bg-[#EEEBF6] border-4 border-[#EEEBF6] shadow-2xl w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center">
                 <button
