@@ -262,7 +262,7 @@ const CreateCampaignModal = ({
             onClick={handleClose}
             className="p-2 hover:bg-gray-100 rounded-full transition-colors"
           >
-            <X className="w-5 h-5 text-gray-400" />
+            <X className="w-5 h-5 cursor-pointer text-gray-400" />
           </button>
         </div>
 
@@ -369,7 +369,7 @@ const CreateCampaignModal = ({
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center space-x-3">
                   <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                    <Calendar className="w-4 h-4 text-blue-600" />
+                    <Calendar className="w-4 h-4 text-blue-600 cursor-pointer" />
                   </div>
                   <div>
                     <h4 className="font-medium text-gray-900">
@@ -388,7 +388,7 @@ const CreateCampaignModal = ({
                       !formData.bootstrappingEligible
                     )
                   }
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 ${
+                  className={`relative inline-flex cursor-pointer h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 ${
                     formData.bootstrappingEligible
                       ? "bg-purple-600"
                       : "bg-gray-200"
@@ -437,7 +437,7 @@ const CreateCampaignModal = ({
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center space-x-3">
                   <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                    <Calendar className="w-4 h-4 text-green-600" />
+                    <Calendar className="w-4 h-4 text-green-600 cursor-pointer" />
                   </div>
                   <div>
                     <h4 className="font-medium text-gray-900">Early Season</h4>
@@ -479,7 +479,7 @@ const CreateCampaignModal = ({
                     onChange={(e) =>
                       handleInputChange("earlySznStartDate", e.target.value)
                     }
-                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
+                    className={`w-full px-3 py-2 cursor-pointer border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
                       errors.earlySznStartDate
                         ? "border-red-300"
                         : "border-gray-300"
@@ -560,7 +560,7 @@ const CreateCampaignModal = ({
             <button
               type="button"
               onClick={handleClose}
-              className="flex-1 px-6 h-12 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium transition-colors"
+              className="flex-1 px-6 h-12 border cursor-pointer border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium transition-colors"
               disabled={isLoading}
             >
               Cancel
@@ -568,7 +568,7 @@ const CreateCampaignModal = ({
             <button
               type="submit"
               disabled={isLoading}
-              className="flex-1 px-6 h-12 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 font-medium transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center"
+              className="flex-1 px-6 cursor-pointer h-12 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 font-medium transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center"
             >
               {isLoading ? (
                 <>
