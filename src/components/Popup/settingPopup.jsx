@@ -99,16 +99,75 @@ export default function SettingsPopup({ isOpen, onClose }) {
 
   // performance optimization
   // Function to fetch balance and EVM address for all accounts
-  const fetchAccountDetails = async (accounts) => {
-    const wsProvider = new WsProvider("wss://rpc.reefscan.com/ws");
-    const provider = new Provider({ provider: wsProvider });
-    await provider.api.isReady;
+  // const fetchAccountDetails = async (accounts) => {
+  //   const wsProvider = new WsProvider("wss://rpc.reefscan.com/ws");
+  //   const provider = new Provider({ provider: wsProvider });
+  //   await provider.api.isReady;
 
+  //   const balances = {};
+  //   const evmAddrs = {};
+
+  //   // Helper function to add timeout to a promise
+  //   const withTimeout = (promise, ms = 5000) => {
+  //     return Promise.race([
+  //       promise,
+  //       new Promise((_, reject) =>
+  //         setTimeout(() => reject(new Error("Request timed out")), ms)
+  //       ),
+  //     ]);
+  //   };
+
+  //   try {
+  //     // Fetch all balances and EVM addresses in parallel
+  //     const accountQueries = accounts.map(async (account) => {
+  //       try {
+  //         // Fetch balance
+  //         const balancePromise = provider.api.query.system.account(
+  //           account.address
+  //         );
+  //         const balance = await withTimeout(balancePromise, 7000); // 5-second timeout
+  //         const freeBalance = u8aToBn(balance.data.free.toU8a()).toString();
+  //         const freeBalanceREEF = (
+  //           parseFloat(freeBalance) / Math.pow(10, 18)
+  //         ).toFixed(4);
+  //         balances[account.address] = freeBalanceREEF;
+
+  //         // Fetch EVM address
+  //         const evmAddressPromise = provider.api.query.evmAccounts.evmAddresses(
+  //           account.address
+  //         );
+  //         const evmAddress = await withTimeout(evmAddressPromise, 7000); // 7-second timeout
+  //         const evmHex = evmAddress.toHex();
+  //         evmAddrs[account.address] = evmHex;
+  //       } catch (error) {
+  //         console.error(
+  //           `Error fetching details for ${account.address}:`,
+  //           error
+  //         );
+  //         balances[account.address] = "0.0000";
+  //         evmAddrs[account.address] = "";
+  //       }
+  //     });
+
+  //     // Execute all queries concurrently
+  //     await Promise.all(accountQueries);
+  //   } catch (error) {
+  //     console.error("Error in fetchAccountDetails:", error);
+  //   } finally {
+  //     // Disconnect the provider to free resources
+  //     await provider.api.disconnect();
+  //   }
+
+  //   setAccountBalances(balances);
+  //   setEvmAddresses(evmAddrs);
+  // };
+  // Optimized function to fetch balance and EVM address for all accounts
+  const fetchAccountDetails = async (accounts) => {
     const balances = {};
     const evmAddrs = {};
 
     // Helper function to add timeout to a promise
-    const withTimeout = (promise, ms = 5000) => {
+    const withTimeout = (promise, ms = 10000) => {
       return Promise.race([
         promise,
         new Promise((_, reject) =>
@@ -117,45 +176,78 @@ export default function SettingsPopup({ isOpen, onClose }) {
       ]);
     };
 
+    let provider = null;
     try {
-      // Fetch all balances and EVM addresses in parallel
-      const accountQueries = accounts.map(async (account) => {
-        try {
-          // Fetch balance
-          const balancePromise = provider.api.query.system.account(
-            account.address
-          );
-          const balance = await withTimeout(balancePromise, 7000); // 5-second timeout
-          const freeBalance = u8aToBn(balance.data.free.toU8a()).toString();
-          const freeBalanceREEF = (
-            parseFloat(freeBalance) / Math.pow(10, 18)
-          ).toFixed(4);
-          balances[account.address] = freeBalanceREEF;
+      // Create provider connection once
+      const wsProvider = new WsProvider("wss://rpc.reefscan.com/ws");
+      provider = new Provider({ provider: wsProvider });
+      await withTimeout(provider.api.isReady, 10000);
 
-          // Fetch EVM address
-          const evmAddressPromise = provider.api.query.evmAccounts.evmAddresses(
-            account.address
-          );
-          const evmAddress = await withTimeout(evmAddressPromise, 7000); // 7-second timeout
-          const evmHex = evmAddress.toHex();
-          evmAddrs[account.address] = evmHex;
-        } catch (error) {
-          console.error(
-            `Error fetching details for ${account.address}:`,
-            error
-          );
-          balances[account.address] = "0.0000";
-          evmAddrs[account.address] = "";
+      // Batch all queries together for better performance
+      const batchQueries = await Promise.allSettled(
+        accounts.map(async (account) => {
+          try {
+            // Fetch both balance and EVM address concurrently for each account
+            const [balance, evmAddress] = await Promise.all([
+              withTimeout(
+                provider.api.query.system.account(account.address),
+                8000
+              ),
+              withTimeout(
+                provider.api.query.evmAccounts.evmAddresses(account.address),
+                8000
+              ),
+            ]);
+
+            const freeBalance = u8aToBn(balance.data.free.toU8a()).toString();
+            const freeBalanceREEF = (
+              parseFloat(freeBalance) / Math.pow(10, 18)
+            ).toFixed(4);
+
+            return {
+              address: account.address,
+              balance: freeBalanceREEF,
+              evmAddress: evmAddress.toHex(),
+            };
+          } catch (error) {
+            console.error(
+              `Error fetching details for ${account.address}:`,
+              error
+            );
+            return {
+              address: account.address,
+              balance: "0.0000",
+              evmAddress: "",
+            };
+          }
+        })
+      );
+
+      // Process results
+      batchQueries.forEach((result) => {
+        if (result.status === "fulfilled" && result.value) {
+          balances[result.value.address] = result.value.balance;
+          evmAddrs[result.value.address] = result.value.evmAddress;
+        } else if (result.status === "rejected") {
+          console.error("Query failed:", result.reason);
         }
       });
-
-      // Execute all queries concurrently
-      await Promise.all(accountQueries);
     } catch (error) {
       console.error("Error in fetchAccountDetails:", error);
+      // Set default values for all accounts if provider fails
+      accounts.forEach((account) => {
+        balances[account.address] = "0.0000";
+        evmAddrs[account.address] = "";
+      });
     } finally {
-      // Disconnect the provider to free resources
-      await provider.api.disconnect();
+      // Always disconnect the provider to free resources
+      if (provider) {
+        try {
+          await provider.api.disconnect();
+        } catch (disconnectError) {
+          console.error("Error disconnecting provider:", disconnectError);
+        }
+      }
     }
 
     setAccountBalances(balances);
