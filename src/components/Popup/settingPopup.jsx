@@ -399,8 +399,7 @@ export default function SettingsPopup({ isOpen, onClose }) {
                         Reef Wallet Extension Not Found
                       </h3>
                       <p className="text-sm sm:text-base text-gray-600">
-                        Please install the Reef Wallet extension to connect your
-                        wallet
+                        Install Browser Extension and refresh the page.
                       </p>
                     </div>
                     <a
@@ -411,12 +410,6 @@ export default function SettingsPopup({ isOpen, onClose }) {
                     >
                       Install Reef Wallet Extension
                     </a>
-                    <button
-                      onClick={connectWallet}
-                      className="mt-4 text-sm text-gray-600 hover:text-[#ae27a5] underline cursor-pointer"
-                    >
-                      I've installed it, try again
-                    </button>
                   </>
                 ) : walletError === "no_accounts" ? (
                   <>
