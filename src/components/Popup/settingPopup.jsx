@@ -48,7 +48,7 @@ export default function SettingsPopup({ isOpen, onClose }) {
         return;
       }
       const walletAccounts = await web3Accounts();
-      // console.log("🚀 ~ connectWallet ~ walletAccounts:", walletAccounts);
+      console.log("🚀 ~ connectWallet ~ walletAccounts:", walletAccounts);
       if (walletAccounts.length === 0) {
         setWalletError("no_accounts");
         setLoading(false);
@@ -162,99 +162,78 @@ export default function SettingsPopup({ isOpen, onClose }) {
   //   setAccountBalances(balances);
   //   setEvmAddresses(evmAddrs);
   // };
-  // Optimized function to fetch balance and EVM address for all accounts
+  // GraphQL endpoint for Reef mainnet
+  const GRAPHQL_ENDPOINT = "https://squid.subsquid.io/reef-explorer/graphql";
+
+  // GraphQL query to get account info
+  const ACCOUNT_QUERY = `
+  query GetAccount($accountId: String!) {
+    accounts(where: {id_eq: $accountId}) {
+      id
+      freeBalance
+      evmAddress
+    }
+  }
+`;
+
+  // Function to fetch account details using GraphQL
   const fetchAccountDetails = async (accounts) => {
     const balances = {};
     const evmAddrs = {};
 
-    // Helper function to add timeout to a promise
-    const withTimeout = (promise, ms = 10000) => {
-      return Promise.race([
-        promise,
-        new Promise((_, reject) =>
-          setTimeout(() => reject(new Error("Request timed out")), ms)
-        ),
-      ]);
-    };
+    // Fetch all accounts concurrently
+    const fetchPromises = accounts.map(async (account) => {
+      try {
+        const response = await fetch(GRAPHQL_ENDPOINT, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            query: ACCOUNT_QUERY,
+            variables: {
+              accountId: account.address,
+            },
+          }),
+        });
 
-    let provider = null;
-    try {
-      // Create provider connection once
-      const wsProvider = new WsProvider("wss://rpc.reefscan.com/ws");
-      provider = new Provider({ provider: wsProvider });
-      await withTimeout(provider.api.isReady, 10000);
+        const result = await response.json();
+        console.log("🚀 ~ fetchAccountDetails ~ result:", result);
 
-      // Batch all queries together for better performance
-      const batchQueries = await Promise.allSettled(
-        accounts.map(async (account) => {
-          try {
-            // Fetch both balance and EVM address concurrently for each account
-            const [balance, evmAddress] = await Promise.all([
-              withTimeout(
-                provider.api.query.system.account(account.address),
-                8000
-              ),
-              withTimeout(
-                provider.api.query.evmAccounts.evmAddresses(account.address),
-                8000
-              ),
-            ]);
+        if (
+          result.data &&
+          result.data.accounts &&
+          result.data.accounts.length > 0
+        ) {
+          const accountData = result.data.accounts[0];
 
-            const freeBalance = u8aToBn(balance.data.free.toU8a()).toString();
-            const freeBalanceREEF = (
-              parseFloat(freeBalance) / Math.pow(10, 18)
-            ).toFixed(4);
+          // Convert balance from raw to REEF
+          const freeBalanceREEF = accountData.freeBalance
+            ? (parseFloat(accountData.freeBalance) / Math.pow(10, 18)).toFixed(
+                4
+              )
+            : "0.0000";
 
-            return {
-              address: account.address,
-              balance: freeBalanceREEF,
-              evmAddress: evmAddress.toHex(),
-            };
-          } catch (error) {
-            console.error(
-              `Error fetching details for ${account.address}:`,
-              error
-            );
-            return {
-              address: account.address,
-              balance: "0.0000",
-              evmAddress: "",
-            };
-          }
-        })
-      );
-
-      // Process results
-      batchQueries.forEach((result) => {
-        if (result.status === "fulfilled" && result.value) {
-          balances[result.value.address] = result.value.balance;
-          evmAddrs[result.value.address] = result.value.evmAddress;
-        } else if (result.status === "rejected") {
-          console.error("Query failed:", result.reason);
+          balances[account.address] = freeBalanceREEF;
+          evmAddrs[account.address] = accountData.evmAddress || "";
+        } else {
+          // Account not found in GraphQL (might be new)
+          balances[account.address] = "0.0000";
+          evmAddrs[account.address] = "";
         }
-      });
-    } catch (error) {
-      console.error("Error in fetchAccountDetails:", error);
-      // Set default values for all accounts if provider fails
-      accounts.forEach((account) => {
+      } catch (error) {
+        console.error(`Error fetching ${account.address}:`, error);
         balances[account.address] = "0.0000";
         evmAddrs[account.address] = "";
-      });
-    } finally {
-      // Always disconnect the provider to free resources
-      if (provider) {
-        try {
-          await provider.api.disconnect();
-        } catch (disconnectError) {
-          console.error("Error disconnecting provider:", disconnectError);
-        }
       }
-    }
+    });
+
+    // Wait for all fetches to complete
+    await Promise.all(fetchPromises);
 
     setAccountBalances(balances);
     setEvmAddresses(evmAddrs);
   };
-
   // Function to copy address to clipboard
   const copyToClipboard = (address) => {
     navigator.clipboard.writeText(address);
