@@ -56,11 +56,9 @@ const CampaignTable = ({
       {/* Table Header with gradient */}
       <div className="bg-gradient-to-r from-purple-50 to-pink-50 px-6 py-4 border-b border-gray-200">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-gray-900">
-            Campaign Pools
-          </h3>
+          <h3 className="text-lg font-semibold text-gray-900">Campaign</h3>
           <div className="text-sm text-gray-600">
-            {campaigns.length} pool{campaigns.length !== 1 ? "s" : ""} shown
+            {campaigns.length} campaign{campaigns.length !== 1 ? "s" : ""} shown
           </div>
         </div>
       </div>
