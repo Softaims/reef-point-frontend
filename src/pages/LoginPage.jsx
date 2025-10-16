@@ -4,7 +4,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { z } from "zod";
 import headerLogo from "../assets/header-logo-reef.png";
 import { useAuth } from "../contexts/AuthContext";
-
+import React from "react";
 // Zod validation schema
 const loginSchema = z.object({
   username: z
@@ -22,10 +22,17 @@ const LoginPage = () => {
     username: "",
     password: "",
   });
-  const { login } = useAuth();
+  const { login, isAuthenticated, isLoading: authLoading } = useAuth();
 
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+
+  // Redirect to dashboard if already logged in
+  React.useEffect(() => {
+    if (isAuthenticated && !authLoading) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [isAuthenticated, authLoading, navigate]);
 
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));

@@ -30,7 +30,6 @@ const Dashboard = () => {
     {
       name: "Total Campaigns",
       value: pagination.totalCount.toString(),
-      change: "+2.5%",
       changeType: "increase",
       icon: Activity,
     },
@@ -230,9 +229,6 @@ const Dashboard = () => {
                     }`}
                   >
                     {stat.change}
-                  </span>
-                  <span className="text-sm text-gray-500 ml-1">
-                    from last month
                   </span>
                 </div>
               </div>
