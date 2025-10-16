@@ -37,7 +37,7 @@ Before running the project, create a `.env` file in the root directory and add t
 VITE_API_BASE_URL=http://localhost:3004
 
 # For production
-# VITE_API_BASE_URL=https://points.reef.host
+# VITE_API_BASE_URL=https://api.example.com
 ```
 
 You can set this to your local backend or production API URL as needed.
