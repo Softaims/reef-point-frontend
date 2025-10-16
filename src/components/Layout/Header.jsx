@@ -158,37 +158,53 @@ export default function Header() {
           {/* Mobile Right Section */}
           <div className="flex md:hidden items-center space-x-3">
             {/* Mobile REEF Badge */}
-            <div className="flex w-fit overflow-hidden bg-gradient-to-br from-[#F4F1FC] to-[#F7F6FC] shadow-lg rounded-full transform transition-all duration-300 hover:scale-105">
-              <div className="flex items-center gap-1.5 pl-2 pr-3 py-2">
-                <img
-                  src={ReefIcon}
-                  alt=""
-                  width={16}
-                  height={16}
-                  className="animate-pulse"
-                />
-                <span className="text-[12px] font-extrabold bg-gradient-to-r from-[#A93185] to-[#5D3BAD] bg-clip-text text-transparent tracking-tight">
-                  {selectedAccount?.balance
-                    ? selectedAccount.balance
-                    : "1151495"}
-                </span>
+            {selectedAccount && (
+              <div className="flex w-fit overflow-hidden bg-gradient-to-br from-[#F4F1FC] to-[#F7F6FC] shadow-lg rounded-full transform transition-all duration-300 hover:scale-105">
+                <div className="flex items-center gap-1.5 pl-2 pr-3 py-2">
+                  <img
+                    src={ReefIcon}
+                    alt=""
+                    width={16}
+                    height={16}
+                    className="animate-pulse"
+                  />
+                  <span className="text-[12px] font-extrabold bg-gradient-to-r from-[#A93185] to-[#5D3BAD] bg-clip-text text-transparent tracking-tight">
+                    {selectedAccount?.balance
+                      ? selectedAccount.balance
+                      : "0.0000"}
+                  </span>
+                </div>
+                <div className="flex items-center bg-gradient-to-r from-[#A93185] to-[#5D3BAD] px-3 py-2 rounded-full">
+                  <span className="text-white text-[12px] font-medium">
+                    {(selectedAccount?.meta?.name || "Anon 1").split(" ")[0]}
+                  </span>
+                </div>
               </div>
-              <div className="flex items-center bg-gradient-to-r from-[#A93185] to-[#5D3BAD] px-3 py-2 rounded-full">
-                <span className="text-white text-[12px] font-medium">
-                  {(selectedAccount?.meta?.name || "Anon 1").split(" ")[0]}
-                </span>
+            )}
+
+            {/* Connect Button */}
+            {!selectedAccount && (
+              <div className="text-white py-1 px-4 rounded-2xl bg-gradient-to-br from-[#ae27a5] to-[#742cb2] shadow-[0_5px_20px_-10px_#742cb2] transition-all duration-300 hover:shadow-[0_8px_25px_-10px_#742cb2] hover:scale-105">
+                <button
+                  className="font-medium cursor-pointer text-sm"
+                  onClick={toggleSettingsPopup}
+                >
+                  Connect
+                </button>
               </div>
-            </div>
+            )}
 
             {/* Settings Icon */}
-            <div className="w-8 h-8 flex items-center justify-center shadow-lg rounded-full bg-[#F4F1FC] transition-all duration-300 hover:scale-110">
-              <button
-                className="flex items-center justify-center text-[#A93185] hover:text-black transition-all duration-300 w-full h-full"
-                onClick={toggleSettingsPopup}
-              >
-                <HiCog6Tooth className="w-5 h-5 transition-transform duration-300 hover:rotate-90" />
-              </button>
-            </div>
+            {selectedAccount && (
+              <div className="w-8 h-8 flex items-center justify-center shadow-lg rounded-full bg-[#F4F1FC] transition-all duration-300 hover:scale-110">
+                <button
+                  className="flex items-center justify-center text-[#A93185] hover:text-black transition-all duration-300 w-full h-full"
+                  onClick={toggleSettingsPopup}
+                >
+                  <HiCog6Tooth className="w-5 h-5 transition-transform duration-300 hover:rotate-90" />
+                </button>
+              </div>
+            )}
 
             {/* Mobile Menu Button with animation */}
             <button
