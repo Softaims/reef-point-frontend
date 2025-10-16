@@ -24,6 +24,7 @@ export default function SettingsPopup({ isOpen, onClose }) {
   const [evmAddresses, setEvmAddresses] = useState({});
   const [loading, setLoading] = useState(false);
   const [copiedAddress, setCopiedAddress] = useState(null);
+  const [walletError, setWalletError] = useState(null);
   const modalScrollRef = useRef(null);
 
   const toggleDropdown = () => {
@@ -33,6 +34,7 @@ export default function SettingsPopup({ isOpen, onClose }) {
   // Function to connect with Reef Wallet and get all accounts
   const connectWallet = async () => {
     setLoading(true);
+    setWalletError(null);
     try {
       const allInjected = await web3Enable("Reef Wallet Integration");
       // console.log(
@@ -40,14 +42,14 @@ export default function SettingsPopup({ isOpen, onClose }) {
       //   allInjected
       // );
       if (allInjected.length === 0) {
-        alert("Please install the Reef Wallet extension");
+        setWalletError("extension_not_installed");
         setLoading(false);
         return;
       }
       const walletAccounts = await web3Accounts();
-      console.log("🚀 ~ connectWallet ~ walletAccounts:", walletAccounts);
+      // console.log("🚀 ~ connectWallet ~ walletAccounts:", walletAccounts);
       if (walletAccounts.length === 0) {
-        alert("No accounts found. Please unlock your Reef Wallet");
+        setWalletError("no_accounts");
         setLoading(false);
         return;
       }
@@ -55,7 +57,7 @@ export default function SettingsPopup({ isOpen, onClose }) {
       await fetchAccountDetails(walletAccounts);
     } catch (error) {
       console.error("Error connecting to wallet:", error);
-      alert("Failed to connect to Reef Wallet");
+      setWalletError("connection_failed");
     }
     setLoading(false);
   };
@@ -123,7 +125,7 @@ export default function SettingsPopup({ isOpen, onClose }) {
           const balancePromise = provider.api.query.system.account(
             account.address
           );
-          const balance = await withTimeout(balancePromise, 5000); // 5-second timeout
+          const balance = await withTimeout(balancePromise, 7000); // 5-second timeout
           const freeBalance = u8aToBn(balance.data.free.toU8a()).toString();
           const freeBalanceREEF = (
             parseFloat(freeBalance) / Math.pow(10, 18)
@@ -134,7 +136,7 @@ export default function SettingsPopup({ isOpen, onClose }) {
           const evmAddressPromise = provider.api.query.evmAccounts.evmAddresses(
             account.address
           );
-          const evmAddress = await withTimeout(evmAddressPromise, 5000); // 5-second timeout
+          const evmAddress = await withTimeout(evmAddressPromise, 7000); // 7-second timeout
           const evmHex = evmAddress.toHex();
           evmAddrs[account.address] = evmHex;
         } catch (error) {
@@ -318,11 +320,76 @@ export default function SettingsPopup({ isOpen, onClose }) {
                   Loading accounts...
                 </div>
               </div>
+            ) : walletError ? (
+              <div className="flex flex-col items-center justify-center py-8 px-4 max-w-md">
+                {walletError === "extension_not_installed" ? (
+                  <>
+                    <div className="text-center mb-6">
+                      <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2">
+                        Reef Wallet Extension Not Found
+                      </h3>
+                      <p className="text-sm sm:text-base text-gray-600">
+                        Please install the Reef Wallet extension to connect your
+                        wallet
+                      </p>
+                    </div>
+                    <a
+                      href="https://chrome.google.com/webstore/detail/reef-wallet/mjgkpalnahacmhkikiommfiomhjipgjn"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-white py-3 px-6 rounded-2xl bg-gradient-to-br from-[#ae27a5] to-[#742cb2] shadow-[0_5px_20px_-10px_#742cb2] font-medium text-sm sm:text-base hover:from-[#742cb2] hover:to-[#ae27a5] transition-all duration-200"
+                    >
+                      Install Reef Wallet Extension
+                    </a>
+                    <button
+                      onClick={connectWallet}
+                      className="mt-4 text-sm text-gray-600 hover:text-[#ae27a5] underline cursor-pointer"
+                    >
+                      I've installed it, try again
+                    </button>
+                  </>
+                ) : walletError === "no_accounts" ? (
+                  <>
+                    <div className="text-center mb-6">
+                      <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2">
+                        No Accounts Found
+                      </h3>
+                      <p className="text-sm sm:text-base text-gray-600">
+                        Please unlock your Reef Wallet and create or import an
+                        account
+                      </p>
+                    </div>
+                    <button
+                      onClick={connectWallet}
+                      className="text-white py-3 px-6 rounded-2xl bg-gradient-to-br from-[#ae27a5] to-[#742cb2] shadow-[0_5px_20px_-10px_#742cb2] font-medium text-sm sm:text-base hover:from-[#742cb2] hover:to-[#ae27a5] transition-all duration-200 cursor-pointer"
+                    >
+                      Try Again
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <div className="text-center mb-6">
+                      <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2">
+                        Connection Failed
+                      </h3>
+                      <p className="text-sm sm:text-base text-gray-600">
+                        Failed to connect to Reef Wallet. Please try again.
+                      </p>
+                    </div>
+                    <button
+                      onClick={connectWallet}
+                      className="text-white py-3 px-6 rounded-2xl bg-gradient-to-br from-[#ae27a5] to-[#742cb2] shadow-[0_5px_20px_-10px_#742cb2] font-medium text-sm sm:text-base hover:from-[#742cb2] hover:to-[#ae27a5] transition-all duration-200 cursor-pointer"
+                    >
+                      Try Again
+                    </button>
+                  </>
+                )}
+              </div>
             ) : accounts.length === 0 ? (
               <div className="flex items-center justify-center py-8">
                 <button
                   onClick={connectWallet}
-                  className="text-white py-2 px-4 sm:py-3 sm:px-6 rounded-2xl bg-gradient-to-br from-[#ae27a5] to-[#742cb2] shadow-[0_5px_20px_-10px_#742cb2] font-medium text-sm sm:text-base"
+                  className="text-white py-2 h-12 w-48 px-6 sm:py-3 sm:px-6 rounded-2xl bg-gradient-to-br from-[#ae27a5] to-[#742cb2] shadow-[0_5px_20px_-10px_#742cb2] font-medium text-sm sm:text-base"
                 >
                   Connect Reef Wallet
                 </button>
