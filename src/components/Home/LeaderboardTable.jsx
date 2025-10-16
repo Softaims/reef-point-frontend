@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 export default function LeaderboardTable({ data = [] }) {
+  console.log("🚀 ~ LeaderboardTable ~ data:", data);
   const [page, setPage] = useState(1);
   const pageSize = 10;
   const totalPages = Math.ceil(data.length / pageSize);
@@ -37,22 +38,20 @@ export default function LeaderboardTable({ data = [] }) {
               // Handle separator row
               if (row.isSeparator) {
                 return (
-                  <tr key={`separator-${index}`}>
+                  <tr key={`separator-${index}`} className="bg-white">
                     <td
                       colSpan="5"
-                      className="px-4 py-2 text-center text-sm text-gray-500"
+                      className="px-4 py-2 text-center text-sm text-gray-500 bg-white"
                     >
-                      <div className="flex items-center justify-center">
-                        <div className="flex-1 border-t border-gray-300"></div>
+                      <div className="flex justify-center">
                         <span className="px-3 text-xs">...</span>
-                        <div className="flex-1 border-t border-gray-300"></div>
                       </div>
                     </td>
                   </tr>
                 );
               }
 
-              // Determine if this is the current user row
+              // Determine if this is the current user rowmeans
               const isCurrentUser = row.rank === "You";
               const rowBgClass = isCurrentUser
                 ? "bg-blue-50 border-2 border-blue-200"
@@ -62,7 +61,7 @@ export default function LeaderboardTable({ data = [] }) {
                 <tr key={index} className={rowBgClass}>
                   <td className="px-4 py-3 text-sm text-[##000000] font-semibold">
                     {row.rank === "You" ? (
-                      <span className="bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold">
+                      <span className=" text-gray-900 py-1 rounded text-xs font-bold">
                         You
                       </span>
                     ) : (

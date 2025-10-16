@@ -18,13 +18,16 @@ export default function Home() {
   const [hasUserPoints, setHasUserPoints] = useState(false);
 
   const { selectedAccount } = useAuth();
+  console.log("🚀 ~ Home ~ selectedAccount:", selectedAccount);
 
   const fetchDataWithAccount = async () => {
     setLoading(true);
     setError(null);
 
     try {
-      const evmAddress = selectedAccount.evmAddress;
+      const evmAddress =
+        selectedAccount?.evmAddress || selectedAccount?.address;
+      console.log("🚀 ~ fetchDataWithAccount ~ evmAddress:", evmAddress);
 
       // Call all three APIs concurrently when account is connected
       const [leaderboardResponse, referralResponse, userStatsResponse] =
@@ -49,6 +52,8 @@ export default function Home() {
         // Create combined leaderboard: top5 + separator + aroundUser
         const top5 = leaderboardResponse.top5 || [];
         const aroundUser = leaderboardResponse.aroundUser || [];
+        const currentUserAddress =
+          selectedAccount?.evmAddress || selectedAccount?.address;
 
         // Normalize data format for user-specific API
         const normalizeUserData = (data) =>
@@ -58,13 +63,32 @@ export default function Home() {
             totalReferralPoints: item.referralPoints,
           }));
 
+        // Find the index of the current user in aroundUser array
+        const userIndex = aroundUser.findIndex(
+          (item) =>
+            item.rank === "You" ||
+            item.userAddress?.toLowerCase() ===
+              currentUserAddress?.toLowerCase()
+        );
+
+        // Get 2 records above and 2 records below the current user
+        let filteredAroundUser = [];
+        if (userIndex !== -1) {
+          const start = Math.max(0, userIndex - 2);
+          const end = Math.min(aroundUser.length, userIndex + 3); // +3 to include current user + 2 below
+          filteredAroundUser = aroundUser.slice(start, end);
+        } else {
+          // If user not found, just show the aroundUser as is
+          filteredAroundUser = aroundUser;
+        }
+
         const combinedLeaderboard = [
           ...normalizeUserData(top5),
           // Add a separator if we have both top5 and aroundUser
-          ...(top5.length > 0 && aroundUser.length > 0
+          ...(top5.length > 0 && filteredAroundUser.length > 0
             ? [{ isSeparator: true }]
             : []),
-          ...normalizeUserData(aroundUser),
+          ...normalizeUserData(filteredAroundUser),
         ];
 
         setLeaderboard(combinedLeaderboard);
@@ -112,7 +136,11 @@ export default function Home() {
   };
 
   useEffect(() => {
-    if (selectedAccount?.evmAddress) {
+    // Check if user has selected an account (either with EVM address or native address)
+    if (
+      selectedAccount &&
+      (selectedAccount.evmAddress || selectedAccount.address)
+    ) {
       fetchDataWithAccount();
     } else {
       fetchDataWithoutAccount();
@@ -149,7 +177,8 @@ export default function Home() {
             <div className="text-red-500 mb-4">{error}</div>
             <button
               onClick={
-                selectedAccount?.evmAddress
+                selectedAccount &&
+                (selectedAccount.evmAddress || selectedAccount.address)
                   ? fetchDataWithAccount
                   : fetchDataWithoutAccount
               }
@@ -174,37 +203,48 @@ export default function Home() {
         <SeasonBanner />
 
         {/* Show centered message when user is connected but has no points */}
-        {selectedAccount?.evmAddress && !hasUserPoints && (
-          <div className="flex items-center justify-center min-h-[400px]">
-            <div className="text-center max-w-md mx-auto">
-              <h2 className="text-xl font-semibold text-gray-800 mb-4">
-                Start Earning Points!
-              </h2>
-              <p className="text-gray-600 text-lg leading-relaxed">
-                Provide some liquidity or start swapping to access your
-                leaderboard points and check your rank.
-              </p>
+        {selectedAccount &&
+          (selectedAccount.evmAddress || selectedAccount.address) &&
+          !hasUserPoints && (
+            <div className="flex items-center justify-center min-h-[400px]">
+              <div className="text-center max-w-md mx-auto">
+                <h2 className="text-xl font-semibold text-gray-800 mb-4">
+                  Start Earning Points!
+                </h2>
+                <p className="text-gray-600 text-lg leading-relaxed">
+                  Provide some liquidity or start swapping to access your
+                  leaderboard points and check your rank.
+                </p>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
         {/* Show components when user has points or no account connected */}
-        {(!selectedAccount?.evmAddress || hasUserPoints) && (
+        {(!(
+          selectedAccount &&
+          (selectedAccount.evmAddress || selectedAccount.address)
+        ) ||
+          hasUserPoints) && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2">
               <LeaderboardTable data={leaderboard} />
             </div>
 
             {/* Only show user stats and referral cards when account is connected and has points */}
-            {selectedAccount?.evmAddress && hasUserPoints && (
-              <div className="space-y-12 mt-16">
-                <UserStatsCard weeklyStats={weeklyStats} />
-                <ReferralCodeCard referralInfo={referralInfo} />
-              </div>
-            )}
+            {selectedAccount &&
+              (selectedAccount.evmAddress || selectedAccount.address) &&
+              hasUserPoints && (
+                <div className="space-y-12 mt-16">
+                  <UserStatsCard weeklyStats={weeklyStats} />
+                  <ReferralCodeCard referralInfo={referralInfo} />
+                </div>
+              )}
 
             {/* Show message when no account is connected */}
-            {!selectedAccount?.evmAddress && (
+            {!(
+              selectedAccount &&
+              (selectedAccount.evmAddress || selectedAccount.address)
+            ) && (
               <div className="space-y-12 mt-16">
                 <div className="bg-gray-50 shadow-md p-6 rounded-lg text-center">
                   <p className="text-gray-600">

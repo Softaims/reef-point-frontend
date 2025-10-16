@@ -43,7 +43,7 @@ const authReducer = (state, action) => {
         user: null,
         isAuthenticated: false,
         isLoading: false,
-        selectedAccount: null,
+        // Don't clear selectedAccount on logout - wallet connection is independent
       };
     case actionTypes.SET_LOADING:
       return {
@@ -169,6 +169,7 @@ export const AuthProvider = ({ children }) => {
 
   // Account selection function
   const setSelectedAccount = async (account) => {
+    console.log("🚀 ~ setSelectedAccount ~ account:", account);
     console.log("🚀 ~ setSelectedAccount ~ account:", account?.evmAddress);
     try {
       // First update the local state
@@ -178,7 +179,7 @@ export const AuthProvider = ({ children }) => {
       });
 
       if (account) {
-        await apiService.connectWallet(account?.evmAddress);
+        await apiService.connectWallet(account?.evmAddress || account?.address);
         console.log("Account saved to database successfully");
       }
     } catch (error) {
