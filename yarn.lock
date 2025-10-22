@@ -16623,9 +16623,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"reef-wallet-integration@workspace:.":
+"reef-swap-dex@workspace:.":
   version: 0.0.0-use.local
-  resolution: "reef-wallet-integration@workspace:."
+  resolution: "reef-swap-dex@workspace:."
   dependencies:
     "@babel/runtime": "npm:^7.27.6"
     "@eslint/js": "npm:^9.25.0"

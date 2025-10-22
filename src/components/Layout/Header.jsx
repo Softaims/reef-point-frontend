@@ -51,11 +51,10 @@ export default function Header() {
   };
 
   const navItems = [
-    { name: "Points", path: "/", active: true },
-    { name: "Docs", path: "#", active: true },
-    { name: "Tokens", path: "#", active: true },
-    { name: "Pools", path: "#", active: false },
-    { name: "Creator", path: "#", active: false },
+    { name: "Points", path: "/", active: true, external: false },
+    { name: "Tokens", path: "https://app.reefswap.com/dashboard", active: true, external: true },
+    { name: "Pools", path: "https://app.reefswap.com/pools", active: true, external: true },
+    { name: "Creator", path: "https://app.reefswap.com/create-token", active: true, external: true },
   ];
 
   return (
@@ -83,26 +82,46 @@ export default function Header() {
           <div className="hidden md:flex items-center space-x-6">
             {/* Navigation with staggered animation */}
             <nav className="hidden lg:flex items-center space-x-6 font-poppins text-[16px] font-semibold">
-              {navItems.map((item, index) => (
-                <Link
-                  key={item.name}
-                  to={item.path}
-                  className={`relative transition-all duration-300 hover:scale-105 ${
-                    location.pathname === item.path && item.active
-                      ? "bg-gradient-to-r from-[#A93185] to-[#5D3BAD] bg-clip-text text-transparent"
-                      : item.active
-                      ? "text-[#000000] hover:text-[#A93185]"
-                      : "text-gray-400 hover:text-[#A93185]"
-                  }`}
-                  style={{
-                    animationDelay: `${index * 100}ms`,
-                  }}
-                >
-                  {item.name}
-                  {/* Animated underline */}
-                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-[#A93185] to-[#5D3BAD] transition-all duration-300 hover:w-full"></span>
-                </Link>
-              ))}
+              {navItems.map((item, index) => {
+                const isActive = location.pathname === item.path && item.active;
+                const baseClassName = `relative transition-all duration-300 hover:scale-105 ${
+                  isActive
+                    ? "bg-gradient-to-r from-[#A93185] to-[#5D3BAD] bg-clip-text text-transparent"
+                    : item.active
+                    ? "text-[#000000] hover:text-[#A93185]"
+                    : "text-gray-400 hover:text-[#A93185]"
+                }`;
+
+                return item.external ? (
+                  <a
+                    key={item.name}
+                    href={item.path}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={baseClassName}
+                    style={{
+                      animationDelay: `${index * 100}ms`,
+                    }}
+                  >
+                    {item.name}
+                    {/* Animated underline */}
+                    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-[#A93185] to-[#5D3BAD] transition-all duration-300 hover:w-full"></span>
+                  </a>
+                ) : (
+                  <Link
+                    key={item.name}
+                    to={item.path}
+                    className={baseClassName}
+                    style={{
+                      animationDelay: `${index * 100}ms`,
+                    }}
+                  >
+                    {item.name}
+                    {/* Animated underline */}
+                    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-[#A93185] to-[#5D3BAD] transition-all duration-300 hover:w-full"></span>
+                  </Link>
+                );
+              })}
             </nav>
             {/* REEF Badge with enhanced animation */}
             {selectedAccount && (
@@ -274,31 +293,56 @@ export default function Header() {
           {/* Navigation */}
           <nav className="flex-1 py-6 px-6">
             <div className="space-y-2">
-              {navItems.map((item, index) => (
-                <Link
-                  key={item.name}
-                  to={item.path}
-                  className={`block w-full text-left py-4 px-6 rounded-xl font-poppins text-lg font-semibold transition-all duration-300 transform hover:scale-105 ${
-                    location.pathname === item.path && item.active
-                      ? "bg-gradient-to-r from-[#A93185] to-[#5D3BAD] text-white shadow-lg"
-                      : item.active
-                      ? "text-[#000000] hover:bg-white/60 hover:shadow-md"
-                      : "text-gray-400 hover:bg-white/40 hover:text-gray-600"
-                  }`}
-                  style={{
-                    animationDelay: `${index * 100}ms`,
-                    animation: mobileMenuOpen
-                      ? `slideInFromRight 0.5s ease-out ${index * 100}ms both`
-                      : "none",
-                  }}
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <div className="flex items-center justify-between">
-                    <span>{item.name}</span>
-                    <div className="w-2 h-2 rounded-full bg-current opacity-20"></div>
-                  </div>
-                </Link>
-              ))}
+              {navItems.map((item, index) => {
+                const isActive = location.pathname === item.path && item.active;
+                const baseClassName = `block w-full text-left py-4 px-6 rounded-xl font-poppins text-lg font-semibold transition-all duration-300 transform hover:scale-105 ${
+                  isActive
+                    ? "bg-gradient-to-r from-[#A93185] to-[#5D3BAD] text-white shadow-lg"
+                    : item.active
+                    ? "text-[#000000] hover:bg-white/60 hover:shadow-md"
+                    : "text-gray-400 hover:bg-white/40 hover:text-gray-600"
+                }`;
+
+                return item.external ? (
+                  <a
+                    key={item.name}
+                    href={item.path}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={baseClassName}
+                    style={{
+                      animationDelay: `${index * 100}ms`,
+                      animation: mobileMenuOpen
+                        ? `slideInFromRight 0.5s ease-out ${index * 100}ms both`
+                        : "none",
+                    }}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span>{item.name}</span>
+                      <div className="w-2 h-2 rounded-full bg-current opacity-20"></div>
+                    </div>
+                  </a>
+                ) : (
+                  <Link
+                    key={item.name}
+                    to={item.path}
+                    className={baseClassName}
+                    style={{
+                      animationDelay: `${index * 100}ms`,
+                      animation: mobileMenuOpen
+                        ? `slideInFromRight 0.5s ease-out ${index * 100}ms both`
+                        : "none",
+                    }}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span>{item.name}</span>
+                      <div className="w-2 h-2 rounded-full bg-current opacity-20"></div>
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
           </nav>
 
